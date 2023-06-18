@@ -1,6 +1,5 @@
 package me.youhavetrouble.notjustnameplates.listeners;
 
-import me.youhavetrouble.notjustnameplates.teams.PacketTeam;
 import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Scoreboard;
@@ -11,16 +10,17 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 
-public class PlayerJoinLeaveListener implements Listener {
+public class TeamManagementListener implements Listener {
 
     private final Scoreboard scoreboard = new Scoreboard();
     private final PlayerTeam team = new PlayerTeam(scoreboard, "notjustnameplates");
     private final HashSet<String> players = new HashSet<>();
 
-    public PlayerJoinLeaveListener() {
+    public TeamManagementListener() {
         team.setNameTagVisibility(PlayerTeam.Visibility.NEVER);
     }
 
@@ -28,9 +28,10 @@ public class PlayerJoinLeaveListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player joiner = event.getPlayer();
         for (Player player : event.getPlayer().getServer().getOnlinePlayers()) {
+            if (player.equals(joiner)) continue;
             addPlayerToTeam(joiner, player);
         }
-        PacketTeam.sendTeamMembers(joiner);
+        sendTeamMembers(joiner);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -41,27 +42,28 @@ public class PlayerJoinLeaveListener implements Listener {
         }
     }
 
-    private void addPlayerToTeam(Player player, Player target) {
+    private void addPlayerToTeam(@NotNull Player player, @NotNull Player target) {
         CraftPlayer craftPlayer = (CraftPlayer) target;
         players.add(player.getName());
-
-        ClientboundSetPlayerTeamPacket teamCreatePacket = ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, true);
+        ClientboundSetPlayerTeamPacket teamCreatePacket = ClientboundSetPlayerTeamPacket
+                .createAddOrModifyPacket(team, true);
         craftPlayer.getHandle().connection.send(teamCreatePacket);
-
-        ClientboundSetPlayerTeamPacket packet = ClientboundSetPlayerTeamPacket.createPlayerPacket(team, player.getName(), ClientboundSetPlayerTeamPacket.Action.ADD);
-
+        ClientboundSetPlayerTeamPacket packet = ClientboundSetPlayerTeamPacket
+                .createPlayerPacket(team, player.getName(), ClientboundSetPlayerTeamPacket.Action.ADD);
         craftPlayer.getHandle().connection.send(packet);
     }
 
-    private void removePlayerFromTeam(Player player, Player target) {
-        ClientboundSetPlayerTeamPacket packet = ClientboundSetPlayerTeamPacket.createPlayerPacket(team, player.getName(), ClientboundSetPlayerTeamPacket.Action.REMOVE);
+    private void removePlayerFromTeam(@NotNull Player player, @NotNull Player target) {
+        ClientboundSetPlayerTeamPacket packet = ClientboundSetPlayerTeamPacket
+                .createPlayerPacket(team, player.getName(), ClientboundSetPlayerTeamPacket.Action.REMOVE);
         CraftPlayer craftPlayer = (CraftPlayer) target;
         players.remove(player.getName());
         craftPlayer.getHandle().connection.send(packet);
     }
 
-    private void sendTeamMembers(Player target) {
-        ClientboundSetPlayerTeamPacket packet = ClientboundSetPlayerTeamPacket.createMultiplePlayerPacket(team, players, ClientboundSetPlayerTeamPacket.Action.ADD);
+    private void sendTeamMembers(@NotNull Player target) {
+        ClientboundSetPlayerTeamPacket packet = ClientboundSetPlayerTeamPacket
+                .createMultiplePlayerPacket(team, players, ClientboundSetPlayerTeamPacket.Action.ADD);
         CraftPlayer craftPlayer = (CraftPlayer) target;
         craftPlayer.getHandle().connection.send(packet);
     }
