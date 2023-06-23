@@ -3,12 +3,15 @@ package me.youhavetrouble.notjustnameplates.nameplates;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Display;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.util.Transformation;
 import org.jetbrains.annotations.NotNull;
+import org.joml.AxisAngle4f;
+import org.joml.Vector3f;
 
 import java.util.UUID;
 
@@ -16,7 +19,7 @@ public class Nameplate {
 
     private Component name;
     private final UUID playerUuid;
-    private double heightOffset = 0.5;
+    private float heightOffset = 0.75f;
 
     private TextDisplay textDisplay;
 
@@ -40,7 +43,18 @@ public class Nameplate {
                             textDisplay.setInvulnerable(true);
                             textDisplay.setPersistent(false);
                             textDisplay.text(this.name);
+                            textDisplay.setAlignment(TextDisplay.TextAlignment.CENTER);
+                            textDisplay.setBillboard(Display.Billboard.CENTER);
+                            textDisplay.setInvulnerable(true);
+                            textDisplay.setTransformation(
+                                    new Transformation(
+                                            new Vector3f(0, heightOffset, 0), // offset
+                                            new AxisAngle4f(0, 0, 0, 0), // left rotation
+                                            new Vector3f(1, 1, 1), // scale
+                                            new AxisAngle4f(0, 0, 0, 0) // right rotation
+                                    ));
                         });
+        player.addPassenger(textDisplay);
     }
 
     /**
@@ -63,7 +77,7 @@ public class Nameplate {
     /**
      * Set height offset from the player's eye location
      */
-    public void setHeightOffset(double heightOffset) {
+    public void setHeightOffset(float heightOffset) {
         this.heightOffset = heightOffset;
     }
 
@@ -76,10 +90,22 @@ public class Nameplate {
     /**
      * Update the nameplate position
      */
-    public void updatePosition() {
+    public void update() {
+        Player player = Bukkit.getPlayer(playerUuid);
+        if (player == null) return;
+        if (player.isDead()) {
+            remove();
+            return;
+        }
         createDisplayEntity();
-        Location location = calculateCurrentLocation();
-        this.textDisplay.teleportAsync(location, PlayerTeleportEvent.TeleportCause.PLUGIN);
+        if (!player.getPassengers().contains(textDisplay)) {
+            player.addPassenger(textDisplay);
+        }
+    }
+
+    protected void remove() {
+        if (textDisplay == null || textDisplay.isDead()) return;
+        textDisplay.remove();
     }
 
 }
