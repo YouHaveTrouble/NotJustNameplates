@@ -1,0 +1,12 @@
+nameplates:
+  default:
+    text:
+      - "%player_displayname%"
+
+    # Billboard options are as follows:
+    # "center" - pivots around center point
+    # "vertical" - pivots around vertical axis
+    # "horizontal" - pivots around horizontal axis
+    # "fixed" - no rotation
+    billboard: "center"
+
