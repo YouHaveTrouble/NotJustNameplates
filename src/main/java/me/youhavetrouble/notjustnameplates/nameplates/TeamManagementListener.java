@@ -1,6 +1,7 @@
 package me.youhavetrouble.notjustnameplates.nameplates;
 
 import me.youhavetrouble.notjustnameplates.NotJustNameplates;
+import me.youhavetrouble.notjustnameplates.displays.DisplayContent;
 import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Scoreboard;
@@ -32,7 +33,8 @@ public class TeamManagementListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player joiner = event.getPlayer();
-        players.put(joiner.getName(), new Nameplate(joiner.getUniqueId(), joiner.displayName()));
+        DisplayContent displayContent = NotJustNameplates.getPluginConfig().getDisplayContent("default");
+        players.put(joiner.getName(), new Nameplate(joiner.getUniqueId(), displayContent != null ? displayContent : new DisplayContent()));
         for (Player player : event.getPlayer().getServer().getOnlinePlayers()) {
             addPlayerToTeam(joiner, player);
         }

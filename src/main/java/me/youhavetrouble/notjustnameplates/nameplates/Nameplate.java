@@ -1,17 +1,17 @@
 package me.youhavetrouble.notjustnameplates.nameplates;
 
 import me.youhavetrouble.notjustnameplates.NotJustNameplates;
+import me.youhavetrouble.notjustnameplates.displays.DisplayContent;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
-import org.bukkit.entity.Display;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.util.Transformation;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
@@ -19,25 +19,26 @@ import java.util.UUID;
 
 public class Nameplate {
 
-    private Component name;
+    private DisplayContent content;
     private final UUID playerUuid;
-    private float heightOffset = 0.7f;
-    private Color backgroundColor = null;
-    private Display.Billboard billboard = Display.Billboard.CENTER;
+    private final float heightOffset = 0.7f;
     private TextDisplay.TextAlignment alignment = TextDisplay.TextAlignment.CENTER;
-    private boolean visibleForOwner = true;
+    private boolean visibleForOwner = false;
 
     private TextDisplay textDisplay;
 
-    public Nameplate(@NotNull UUID playerUuid, Component name) {
+    public Nameplate(@NotNull UUID playerUuid, DisplayContent content) {
         this.playerUuid = playerUuid;
-        this.name = name;
+        this.content = content;
     }
 
     private void createDisplayEntity() {
         if (textDisplay != null && !textDisplay.isDead()) return;
+        if (this.content == null) return;
+        if (content.getCurrentFrame().text() == null) return;
         Player player = Bukkit.getPlayer(playerUuid);
         if (player == null) return;
+
         this.textDisplay = (TextDisplay) player.getWorld().spawnEntity(
                 player.getEyeLocation(),
                 EntityType.TEXT_DISPLAY,
@@ -46,9 +47,14 @@ public class Nameplate {
                     textDisplay.setInvulnerable(true);
                     textDisplay.setPersistent(false);
                     textDisplay.setAlignment(alignment);
-                    textDisplay.setBillboard(billboard);
+                    textDisplay.setBillboard(this.content.getBillboard());
                     textDisplay.setShadowRadius(0);
-                    if (this.backgroundColor != null) textDisplay.setBackgroundColor(this.backgroundColor);
+
+                    Color backgroundColor = this.content.getCurrentFrame().backgroundColor();
+                    if (backgroundColor != null) textDisplay.setBackgroundColor(backgroundColor);
+
+                    textDisplay.text(parseText(this.content.getCurrentFrame().text(), player));
+
                     textDisplay.setTransformation(
                             new Transformation(
                                     new Vector3f(0, heightOffset, 0), // offset
@@ -63,31 +69,8 @@ public class Nameplate {
         player.addPassenger(textDisplay);
     }
 
-    /**
-     * Get content of the nameplate
-     * @return content of the nameplate
-     */
-    public Component getName() {
-        return name;
-    }
-
-    /**
-     * Set content of the nameplate
-     */
-    public void setName(Component name) {
-        this.name = name;
-        if (textDisplay == null || textDisplay.isDead()) return;
-        textDisplay.text(name);
-    }
-
-    public void setBillboard(@NotNull Display.Billboard billboard) {
-        this.billboard = billboard;
-        if (textDisplay == null || textDisplay.isDead()) return;
-        textDisplay.setBillboard(billboard);
-    }
-
-    public Display.Billboard getBillboard() {
-        return billboard;
+    public void setContent(@NotNull DisplayContent content) {
+        this.content = content;
     }
 
     public void setAlignment(@NotNull TextDisplay.TextAlignment alignment) {
@@ -98,20 +81,6 @@ public class Nameplate {
 
     public TextDisplay.TextAlignment getAlignment() {
         return alignment;
-    }
-
-    public void setBackgroundColor(@Nullable Color color) {
-        this.backgroundColor = color;
-        if (textDisplay == null || textDisplay.isDead()) return;
-        if (this.backgroundColor == null) {
-            textDisplay.setDefaultBackground(true);
-            return;
-        }
-        textDisplay.setBackgroundColor(this.backgroundColor);
-    }
-
-    public Color getBackgroundColor() {
-        return backgroundColor;
     }
 
     public void setVisibleForOwner(boolean visible) {
@@ -131,35 +100,53 @@ public class Nameplate {
     }
 
     /**
-     * Set height offset from the player's eye location
-     */
-    public void setHeightOffset(float heightOffset) {
-        this.heightOffset = heightOffset;
-    }
-
-    public float getHeightOffset() {
-        return heightOffset;
-    }
-
-    /**
      * Update the nameplate position
      */
     public void update() {
         Player player = Bukkit.getPlayer(playerUuid);
-        if (player == null || player.isDead() || name == null) {
+        if (player == null || player.isDead() || content.getCurrentFrame().text() == null) {
             remove();
             return;
         }
         createDisplayEntity();
+        if (textDisplay == null || textDisplay.isDead()) return;
         if (!player.getPassengers().contains(textDisplay)) {
             player.addPassenger(textDisplay);
         }
-        textDisplay.text(this.name);
+
+        textDisplay.text(parseText(this.content.getCurrentFrame().text(), player));
+
+        textDisplay.setBillboard(this.content.getBillboard());
+        textDisplay.setInterpolationDuration(content.getRefreshRate());
+
+        Color backgroundColor = this.content.getCurrentFrame().backgroundColor();
+        if (backgroundColor == null) {
+            textDisplay.setDefaultBackground(true);
+        } else {
+            textDisplay.setBackgroundColor(backgroundColor);
+        }
+
+        setVisibleForOwner(this.visibleForOwner || player.hasPermission("notjustnameplates.seeown"));
+
     }
 
     protected void remove() {
         if (textDisplay == null || textDisplay.isDead()) return;
         textDisplay.remove();
+    }
+
+    private Component parseText(String text, Player player) {
+
+        Component component = MiniMessage.miniMessage().deserialize(text);
+
+        if (player == null || !player.isOnline()) return component;
+
+        component = component.replaceText(builder -> {
+            builder.matchLiteral("%displayname%");
+            builder.replacement(player.displayName());
+        });
+
+        return component;
     }
 
 }

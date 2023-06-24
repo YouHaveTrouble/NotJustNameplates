@@ -1,5 +1,5 @@
 name: NotJustNameplates
-version: '${version}'
+version: "${version}"
 main: me.youhavetrouble.notjustnameplates.NotJustNameplates
 api-version: "1.20"
 authors: ["YouHaveTrouble"]
