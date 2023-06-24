@@ -17,17 +17,24 @@ public class NJNConfig {
 
     private final HashMap<String, DisplayContent> displayContents = new HashMap<>();
 
+    public final String noPermissionMessage, configReloadedMessage;
+
     protected NJNConfig(NotJustNameplates plugin) {
         this.plugin = plugin;
         plugin.saveDefaultConfig();
         plugin.reloadConfig();
-        this.config = plugin.getConfig();
-        reload();
-    }
 
-    public void reload() {
-        displayContents.clear();
         this.config = plugin.getConfig();
+
+        ConfigurationSection messagesSection = config.getConfigurationSection("messages");
+        if (messagesSection == null) {
+            messagesSection = config.createSection("messages");
+            plugin.getLogger().severe("No messages section found in config! Correct your config and reload.");
+        }
+
+        noPermissionMessage = messagesSection.getString("no-permission", "<red>You do not have permission to use this.");
+        configReloadedMessage = messagesSection.getString("config-reloaded", "<aqua>NJN Config reloaded.");
+
 
         ConfigurationSection namePlatesSection = config.getConfigurationSection("nameplates");
         if (namePlatesSection == null) {
@@ -43,6 +50,7 @@ public class NJNConfig {
             displayContents.put(sectionName, displayContent);
         }
     }
+
 
     public DisplayContent getDisplayContent(String name) {
         return displayContents.get(name);

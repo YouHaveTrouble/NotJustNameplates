@@ -21,3 +21,7 @@ nameplates:
     # "fixed" - no rotation
     billboard: "horizontal"
 
+messages:
+  config-reloaded: "<aqua>NJN Config reloaded."
+  no-permission: "<red>You do not have permission to use this."
+

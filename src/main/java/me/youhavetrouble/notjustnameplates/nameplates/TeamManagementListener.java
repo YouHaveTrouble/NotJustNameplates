@@ -59,6 +59,18 @@ public class TeamManagementListener implements Listener {
         nameplate.remove();
     }
 
+    public void reloadTeams() {
+        this.players.values().forEach(Nameplate::remove);
+        this.players.clear();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            DisplayContent displayContent = NotJustNameplates.getPluginConfig().getDisplayContent("default");
+            players.put(player.getName(), new Nameplate(player.getUniqueId(), displayContent != null ? displayContent : new DisplayContent()));
+        }
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            sendTeamMembers(player);
+        }
+    }
+
     private void addPlayerToTeam(@NotNull Player player, @NotNull Player target) {
         CraftPlayer craftPlayer = (CraftPlayer) target;
         ClientboundSetPlayerTeamPacket teamCreatePacket = ClientboundSetPlayerTeamPacket

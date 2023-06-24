@@ -1,5 +1,6 @@
 package me.youhavetrouble.notjustnameplates;
 
+import me.youhavetrouble.notjustnameplates.commands.MainCommand;
 import me.youhavetrouble.notjustnameplates.nameplates.TeamManagementListener;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -11,14 +12,22 @@ public final class NotJustNameplates extends JavaPlugin {
     private static NJNConfig config;
     private static long time = Long.MIN_VALUE;
 
+    private TeamManagementListener teamManagementListener = null;
+
     @Override
     public void onEnable() {
         instance = this;
         config = new NJNConfig(this);
 
         DefaultPermissions.registerPermission("notjustnameplates.seeown", "Allows a player to see their own nameplate", PermissionDefault.FALSE);
+        DefaultPermissions.registerPermission("notjustnameplates.command", "Allows a player to use the /njn command", PermissionDefault.TRUE);
 
-        getServer().getPluginManager().registerEvents(new TeamManagementListener(this), this);
+        this.teamManagementListener = new TeamManagementListener(this);
+
+        getServer().getPluginManager().registerEvents(this.teamManagementListener, this);
+
+        new MainCommand(this);
+
         getServer().getScheduler().runTaskTimerAsynchronously(this, () -> {
             time++;
             if (config == null) return;
@@ -29,6 +38,12 @@ public final class NotJustNameplates extends JavaPlugin {
                 displayContent.advanceFrame();
             });
         }, 1, 1);
+    }
+
+    public void reloadPluginConfig() {
+        config = new NJNConfig(this);
+        teamManagementListener.reloadTeams();
+
     }
 
     public static NotJustNameplates getInstance() {
