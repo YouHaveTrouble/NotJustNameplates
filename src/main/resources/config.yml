@@ -19,7 +19,7 @@ nameplates:
     # "vertical" - pivots around vertical axis
     # "horizontal" - pivots around horizontal axis
     # "fixed" - no rotation
-    billboard: "horizontal"
+    billboard: "vertical"
 
 messages:
   config-reloaded: "<aqua>NJN Config reloaded."
