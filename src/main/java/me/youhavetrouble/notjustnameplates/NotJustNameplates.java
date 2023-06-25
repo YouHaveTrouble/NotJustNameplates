@@ -21,6 +21,7 @@ public final class NotJustNameplates extends JavaPlugin {
 
         DefaultPermissions.registerPermission("notjustnameplates.seeown", "Allows a player to see their own nameplate", PermissionDefault.FALSE);
         DefaultPermissions.registerPermission("notjustnameplates.command", "Allows a player to use the /njn command", PermissionDefault.TRUE);
+        DefaultPermissions.registerPermission("notjustnameplates.command.reload", "Allows a player to use the /njn reload command", PermissionDefault.OP);
 
         this.teamManagementListener = new TeamManagementListener(this);
 
