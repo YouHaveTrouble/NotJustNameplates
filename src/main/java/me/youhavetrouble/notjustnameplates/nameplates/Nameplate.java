@@ -6,10 +6,13 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
+import org.bukkit.NamespacedKey;
+import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Transformation;
 import org.jetbrains.annotations.NotNull;
 import org.joml.AxisAngle4f;
@@ -19,6 +22,9 @@ import java.util.UUID;
 
 public class Nameplate {
 
+    public static final NamespacedKey NAMEPLATE_KEY = new NamespacedKey(NotJustNameplates.getInstance(), "nameplate");
+
+    protected boolean forceHide = false;
     private DisplayContent content;
     private final UUID playerUuid;
     private final float heightOffset = 0.7f;
@@ -30,6 +36,10 @@ public class Nameplate {
     public Nameplate(@NotNull UUID playerUuid, DisplayContent content) {
         this.playerUuid = playerUuid;
         this.content = content;
+    }
+
+    protected TextDisplay getEntity() {
+        return textDisplay;
     }
 
     private void createDisplayEntity() {
@@ -44,6 +54,7 @@ public class Nameplate {
                 EntityType.TEXT_DISPLAY,
                 CreatureSpawnEvent.SpawnReason.CUSTOM, entity -> {
                     TextDisplay textDisplay = (TextDisplay) entity;
+                    textDisplay.getPersistentDataContainer().set(NAMEPLATE_KEY, PersistentDataType.STRING, player.getName());
                     textDisplay.setInvulnerable(true);
                     textDisplay.setPersistent(false);
                     textDisplay.setAlignment(alignment);
@@ -103,11 +114,16 @@ public class Nameplate {
      * Update the nameplate position
      */
     public void update() {
+        if (forceHide) {
+            remove();
+            return;
+        }
         Player player = Bukkit.getPlayer(playerUuid);
         if (player == null || player.isDead() || content.getCurrentFrame().text() == null) {
             remove();
             return;
         }
+
         createDisplayEntity();
         if (textDisplay == null || textDisplay.isDead()) return;
         if (!player.getPassengers().contains(textDisplay)) {

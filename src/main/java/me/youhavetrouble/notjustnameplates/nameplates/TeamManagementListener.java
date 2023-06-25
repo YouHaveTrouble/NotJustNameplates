@@ -1,20 +1,27 @@
 package me.youhavetrouble.notjustnameplates.nameplates;
 
+import io.papermc.paper.event.entity.EntityPortalReadyEvent;
 import me.youhavetrouble.notjustnameplates.NotJustNameplates;
 import me.youhavetrouble.notjustnameplates.displays.DisplayContent;
 import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Scoreboard;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.entity.EntityPortalEnterEvent;
+import org.bukkit.event.entity.EntityPortalExitEvent;
+import org.bukkit.event.player.*;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
+import org.purpurmc.purpur.event.entity.EntityTeleportHinderedEvent;
 
 import java.util.HashMap;
 
@@ -54,9 +61,22 @@ public class TeamManagementListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerTeleport(PlayerTeleportEvent event) {
+        NotJustNameplates.getInstance().getLogger().info("Teleport event");
         Nameplate nameplate = players.get(event.getPlayer().getName());
         if (nameplate == null) return;
         nameplate.remove();
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    public void onPlayerTeleportHindered(EntityTeleportHinderedEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+        if (event.getReason() != EntityTeleportHinderedEvent.Reason.IS_VEHICLE) return;
+        NotJustNameplates.getInstance().getLogger().info("Teleport hindered event");
+        Nameplate nameplate = players.get(player.getName());
+        if (nameplate == null) return;
+        nameplate.remove();
+        event.setShouldRetry(true);
+
     }
 
     public void reloadTeams() {
