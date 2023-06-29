@@ -4,11 +4,13 @@ import io.papermc.paper.event.entity.EntityPortalReadyEvent;
 import me.youhavetrouble.notjustnameplates.NotJustNameplates;
 import me.youhavetrouble.notjustnameplates.displays.DisplayContent;
 import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Scoreboard;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -61,22 +63,53 @@ public class TeamManagementListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerTeleport(PlayerTeleportEvent event) {
-        NotJustNameplates.getInstance().getLogger().info("Teleport event");
         Nameplate nameplate = players.get(event.getPlayer().getName());
         if (nameplate == null) return;
         nameplate.remove();
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    public void onPlayerMove(PlayerMoveEvent event) {
+        if (!event.hasChangedPosition()) return;
+
+        Player player = event.getPlayer();
+        Nameplate nameplate = players.get(player.getName());
+        if (nameplate == null) return;
+
+        CraftPlayer craftPlayer = (CraftPlayer) player;
+        AABB playerBox = craftPlayer.getHandle().getBoundingBox();
+        World world = player.getWorld();
+        Location loc1 = new Location(world, playerBox.maxX, playerBox.maxY, playerBox.maxZ);
+        Location loc2 = loc1.clone().subtract(0, 1 , 0);
+        Location loc3 = new Location(world, playerBox.minX, playerBox.minY, playerBox.minZ);
+        Location loc4 = loc3.clone().add(0, 1 , 0);
+
+        boolean inPortal = false;
+        for (Location loc : new Location[] {loc1, loc2, loc3, loc4}) {
+            Block block = loc.getBlock();
+            if (block.getType() == Material.NETHER_PORTAL || block.getType() == Material.END_PORTAL) {
+                inPortal = true;
+                break;
+            }
+        }
+
+        if (inPortal) {
+            nameplate.remove();
+            nameplate.forceHide = true;
+            return;
+        }
+
+        nameplate.forceHide = false;
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerTeleportHindered(EntityTeleportHinderedEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
         if (event.getReason() != EntityTeleportHinderedEvent.Reason.IS_VEHICLE) return;
-        NotJustNameplates.getInstance().getLogger().info("Teleport hindered event");
         Nameplate nameplate = players.get(player.getName());
         if (nameplate == null) return;
         nameplate.remove();
         event.setShouldRetry(true);
-
     }
 
     public void reloadTeams() {
