@@ -6,8 +6,8 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
+import org.bukkit.GameMode;
 import org.bukkit.NamespacedKey;
-import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
@@ -119,7 +119,15 @@ public class Nameplate {
             return;
         }
         Player player = Bukkit.getPlayer(playerUuid);
-        if (player == null || player.isDead() || content.getCurrentFrame().text() == null) {
+        if (player == null || player.isDead()) {
+            remove();
+            return;
+        }
+        if (content.getCurrentFrame().text() == null) {
+            remove();
+            return;
+        }
+        if (player.getGameMode() == GameMode.SPECTATOR) {
             remove();
             return;
         }
