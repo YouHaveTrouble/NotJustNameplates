@@ -1,27 +1,19 @@
 package me.youhavetrouble.notjustnameplates.nameplates;
 
-import io.papermc.paper.event.entity.EntityPortalReadyEvent;
 import me.youhavetrouble.notjustnameplates.NotJustNameplates;
 import me.youhavetrouble.notjustnameplates.displays.DisplayContent;
 import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Scoreboard;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityPortalEnterEvent;
-import org.bukkit.event.entity.EntityPortalExitEvent;
 import org.bukkit.event.player.*;
-import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.purpurmc.purpur.event.entity.EntityTeleportHinderedEvent;
 
@@ -70,9 +62,17 @@ public class TeamManagementListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerMove(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+        if (player.getGameMode() == GameMode.SPECTATOR) {
+            Nameplate nameplate = players.get(player.getName());
+            if (nameplate == null) return;
+            nameplate.forceHide = true;
+            nameplate.remove();
+            return;
+        }
+
         if (!event.hasChangedPosition()) return;
 
-        Player player = event.getPlayer();
         Nameplate nameplate = players.get(player.getName());
         if (nameplate == null) return;
 

@@ -2,7 +2,6 @@ package me.youhavetrouble.notjustnameplates;
 
 import me.youhavetrouble.notjustnameplates.commands.MainCommand;
 import me.youhavetrouble.notjustnameplates.nameplates.TeamManagementListener;
-import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.permissions.DefaultPermissions;

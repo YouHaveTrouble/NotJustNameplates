@@ -13,7 +13,6 @@ import java.util.HashMap;
 public class NJNConfig {
 
     private final NotJustNameplates plugin;
-    private FileConfiguration config;
 
     private final HashMap<String, DisplayContent> displayContents = new HashMap<>();
 
@@ -24,7 +23,7 @@ public class NJNConfig {
         plugin.saveDefaultConfig();
         plugin.reloadConfig();
 
-        this.config = plugin.getConfig();
+        FileConfiguration config = plugin.getConfig();
 
         ConfigurationSection messagesSection = config.getConfigurationSection("messages");
         if (messagesSection == null) {
