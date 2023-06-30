@@ -80,14 +80,18 @@ public class TeamManagementListener implements Listener {
         AABB playerBox = craftPlayer.getHandle().getBoundingBox();
         World world = player.getWorld();
         Location loc1 = new Location(world, playerBox.maxX, playerBox.maxY, playerBox.maxZ);
-        Location loc2 = loc1.clone().subtract(0, 1 , 0);
+        Location loc2 = loc1.clone().subtract(0, 1, 0);
         Location loc3 = new Location(world, playerBox.minX, playerBox.minY, playerBox.minZ);
-        Location loc4 = loc3.clone().add(0, 1 , 0);
+        Location loc4 = loc3.clone().add(0, 1, 0);
 
         boolean inPortal = false;
-        for (Location loc : new Location[] {loc1, loc2, loc3, loc4}) {
+        for (Location loc : new Location[]{loc1, loc2, loc3, loc4}) {
             Block block = loc.getBlock();
-            if (block.getType() == Material.NETHER_PORTAL || block.getType() == Material.END_PORTAL) {
+            if (
+                    block.getType() == Material.NETHER_PORTAL
+                    || block.getType() == Material.END_PORTAL
+                    || block.getType() == Material.END_GATEWAY
+            ) {
                 inPortal = true;
                 break;
             }
