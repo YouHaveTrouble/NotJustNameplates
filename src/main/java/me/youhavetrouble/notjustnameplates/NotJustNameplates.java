@@ -6,8 +6,6 @@ import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.permissions.DefaultPermissions;
 
-import java.util.UUID;
-
 public final class NotJustNameplates extends JavaPlugin {
 
     private static NotJustNameplates instance;
