@@ -1,7 +1,7 @@
 package me.youhavetrouble.notjustnameplates;
 
 import me.youhavetrouble.notjustnameplates.commands.MainCommand;
-import me.youhavetrouble.notjustnameplates.nameplates.TeamManagementListener;
+import me.youhavetrouble.notjustnameplates.nameplates.NameplateManager;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.permissions.DefaultPermissions;
@@ -12,7 +12,8 @@ public final class NotJustNameplates extends JavaPlugin {
     private static NJNConfig config;
     private static long time = Long.MIN_VALUE;
 
-    private TeamManagementListener teamManagementListener = null;
+    private final TeamManager teamManager = new TeamManager();
+    private NameplateManager nameplateManager = null;
 
     @Override
     public void onEnable() {
@@ -23,9 +24,9 @@ public final class NotJustNameplates extends JavaPlugin {
         DefaultPermissions.registerPermission("notjustnameplates.command", "Allows a player to use the /njn command", PermissionDefault.TRUE);
         DefaultPermissions.registerPermission("notjustnameplates.command.reload", "Allows a player to use the /njn reload command", PermissionDefault.OP);
 
-        this.teamManagementListener = new TeamManagementListener(this);
+        this.nameplateManager = new NameplateManager(this);
 
-        getServer().getPluginManager().registerEvents(this.teamManagementListener, this);
+        getServer().getPluginManager().registerEvents(this.nameplateManager, this);
 
         new MainCommand(this);
 
@@ -43,8 +44,15 @@ public final class NotJustNameplates extends JavaPlugin {
 
     public void reloadPluginConfig() {
         config = new NJNConfig(this);
-        teamManagementListener.reloadTeams();
+        nameplateManager.reloadNameplates();
+    }
 
+    public TeamManager getTeamManager() {
+        return teamManager;
+    }
+
+    public NameplateManager getNameplateManager() {
+        return nameplateManager;
     }
 
     public static NotJustNameplates getInstance() {
