@@ -13,7 +13,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
 import org.purpurmc.purpur.event.entity.EntityTeleportHinderedEvent;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class NameplateManager implements Listener {
@@ -97,6 +99,10 @@ public class NameplateManager implements Listener {
             nameplates.put(player.getUniqueId(), new Nameplate(player.getUniqueId(), displayContent != null ? displayContent : new DisplayContent()));
         }
 
+    }
+
+    public Map<UUID, Nameplate> getNameplates() {
+        return Collections.unmodifiableMap(nameplates);
     }
 
 }

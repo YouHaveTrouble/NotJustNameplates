@@ -1,10 +1,15 @@
 package me.youhavetrouble.notjustnameplates;
 
 import me.youhavetrouble.notjustnameplates.commands.MainCommand;
+import me.youhavetrouble.notjustnameplates.displays.DisplayContent;
 import me.youhavetrouble.notjustnameplates.nameplates.NameplateManager;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.permissions.DefaultPermissions;
+
+import java.util.Map;
 
 public final class NotJustNameplates extends JavaPlugin {
 
@@ -39,6 +44,22 @@ public final class NotJustNameplates extends JavaPlugin {
                 if (time % displayContent.getRefreshRate() != 0) return;
                 displayContent.advanceFrame();
             });
+
+            if (time % 20 != 0) return;
+            nameplateManager.getNameplates().forEach(((uuid, nameplate) -> {
+                Player player = Bukkit.getPlayer(uuid);
+                if (player == null || !player.isOnline()) return;
+                for (Map.Entry<String, DisplayContent> entry : config.getDisplayContents().entrySet()) {
+                    String id = entry.getKey();
+                    if (id.equalsIgnoreCase("default")) continue;
+                    if (player.hasPermission("notjustnameplates.display." + id)) {
+                        nameplate.setContent(entry.getValue());
+                        return;
+                    }
+                }
+                nameplate.setContent(config.getDisplayContent("default"));
+            }));
+
         }, 1, 1);
     }
 
