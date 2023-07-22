@@ -8,16 +8,16 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Display;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class NJNConfig {
 
     private final NotJustNameplates plugin;
 
-    private final HashMap<String, DisplayContent> displayContents = new HashMap<>();
+    private final LinkedHashMap<String, DisplayContent> displayContents = new LinkedHashMap<>();
 
     public final String noPermissionMessage, configReloadedMessage;
 
