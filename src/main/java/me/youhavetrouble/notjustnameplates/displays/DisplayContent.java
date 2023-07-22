@@ -10,12 +10,12 @@ import java.util.List;
 public class DisplayContent {
 
     private final List<DisplayFrame> frames = new ArrayList<>();
-    private int refreshRate = 0;
-    private int currentFrame = 0;
-
+    private int refreshRate, interpolationDuration, interpolationDelay, currentFrame;
     private Display.Billboard billboard = Display.Billboard.HORIZONTAL;
+    private boolean seeThrough = false;
 
-    public DisplayContent() {}
+    public DisplayContent() {
+    }
 
     /**
      * Set the refresh rate of the display in ticks. 0 means no refresh rate.
@@ -34,6 +34,30 @@ public class DisplayContent {
 
     public Display.Billboard getBillboard() {
         return billboard;
+    }
+
+    public void setSeeThrough(boolean seeThrough) {
+        this.seeThrough = seeThrough;
+    }
+
+    public boolean getSeeThrough() {
+        return seeThrough;
+    }
+
+    public void setInterpolationDelay(int interpolationDelay) {
+        this.interpolationDelay = interpolationDelay;
+    }
+
+    public void setInterpolationDuration(int interpolationDuration) {
+        this.interpolationDuration = interpolationDuration;
+    }
+
+    public int getInterpolationDelay() {
+        return interpolationDelay;
+    }
+
+    public int getInterpolationDuration() {
+        return interpolationDuration;
     }
 
     public void addFrame(DisplayFrame frame) {

@@ -60,20 +60,26 @@ public class Nameplate {
                     textDisplay.setPersistent(false);
                     textDisplay.setAlignment(alignment);
                     textDisplay.setBillboard(this.content.getBillboard());
+                    textDisplay.setSeeThrough(this.content.getSeeThrough());
                     textDisplay.setShadowRadius(0);
+                    textDisplay.setInterpolationDuration(content.getInterpolationDuration());
+                    textDisplay.setInterpolationDelay(content.getInterpolationDelay());
 
                     Color backgroundColor = this.content.getCurrentFrame().backgroundColor();
                     if (backgroundColor != null) textDisplay.setBackgroundColor(backgroundColor);
 
                     textDisplay.text(parseText(this.content.getCurrentFrame().text(), player));
 
-                    textDisplay.setTransformation(
-                            new Transformation(
-                                    new Vector3f(0, heightOffset, 0), // offset
-                                    new AxisAngle4f(0, 0, 0, 0), // left rotation
-                                    new Vector3f(1, 1, 1), // scale
-                                    new AxisAngle4f(0, 0, 0, 0) // right rotation
-                            ));
+                    textDisplay.setTransformation(new Transformation(
+                            new Vector3f(0, heightOffset, 0), // offset
+                            new AxisAngle4f(0, 0, 0, 0), // left rotation
+                            new Vector3f(
+                                    content.getCurrentFrame().scaleX(),
+                                    content.getCurrentFrame().scaleY(),
+                                    content.getCurrentFrame().scaleZ()
+                            ), // scale
+                            new AxisAngle4f(0, 0, 0, 0) // right rotation
+                    ));
                 });
         if (!this.visibleForOwner) {
             player.hideEntity(NotJustNameplates.getInstance(), textDisplay);
@@ -144,7 +150,17 @@ public class Nameplate {
         textDisplay.text(parseText(this.content.getCurrentFrame().text(), player));
 
         textDisplay.setBillboard(this.content.getBillboard());
-        textDisplay.setInterpolationDuration(content.getRefreshRate());
+
+        textDisplay.setTransformation(new Transformation(
+                new Vector3f(0, heightOffset, 0), // offset
+                new AxisAngle4f(0, 0, 0, 0), // left rotation
+                new Vector3f(
+                        content.getCurrentFrame().scaleX(),
+                        content.getCurrentFrame().scaleY(),
+                        content.getCurrentFrame().scaleZ()
+                ), // scale
+                new AxisAngle4f(0, 0, 0, 0) // right rotation
+        ));
 
         Color backgroundColor = this.content.getCurrentFrame().backgroundColor();
         if (backgroundColor == null) {
@@ -152,6 +168,9 @@ public class Nameplate {
         } else {
             textDisplay.setBackgroundColor(backgroundColor);
         }
+
+        textDisplay.setInterpolationDuration(content.getInterpolationDuration());
+        textDisplay.setInterpolationDelay(content.getInterpolationDelay());
 
         setVisibleForOwner(this.visibleForOwner || player.hasPermission("notjustnameplates.seeown"));
 

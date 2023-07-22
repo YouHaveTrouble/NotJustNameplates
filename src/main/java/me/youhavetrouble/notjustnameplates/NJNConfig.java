@@ -80,6 +80,9 @@ public class NJNConfig {
         DisplayContent displayContent = new DisplayContent();
 
         displayContent.setRefreshRate(displayContentSection.getInt("refresh-rate", 0));
+        displayContent.setSeeThrough(displayContentSection.getBoolean("see-through", false));
+        displayContent.setInterpolationDelay(displayContentSection.getInt("interpolation-delay", displayContent.getRefreshRate()));
+        displayContent.setInterpolationDuration(displayContentSection.getInt("interpolation-duration", displayContent.getRefreshRate()));
 
         Display.Billboard billboard = Display.Billboard.HORIZONTAL;
         try {
@@ -94,7 +97,10 @@ public class NJNConfig {
             if (frameSection == null) return;
             String text = frameSection.getString("text", null);
             String backgroundColor = frameSection.getString("background");
-            displayContent.addFrame(new DisplayFrame(text, colorFromHex(backgroundColor)));
+            float scaleX = (float) frameSection.getDouble("scale-x", 1);
+            float scaleY = (float) frameSection.getDouble("scale-y", 1);
+            float scaleZ = (float) frameSection.getDouble("offset-z", 1);
+            displayContent.addFrame(new DisplayFrame(text, colorFromHex(backgroundColor), scaleX, scaleY, scaleZ));
         });
         Permission permission = new Permission("notjustnameplates.display." + displayContentSection.getName(), "Allows player to use " + displayContentSection.getName() + " nameplate", PermissionDefault.FALSE);
         plugin.getServer().getPluginManager().addPermission(permission);
