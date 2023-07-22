@@ -81,7 +81,9 @@ public class Nameplate {
     }
 
     public void setContent(@NotNull DisplayContent content) {
+        if (this.content == content) return;
         this.content = content;
+        Bukkit.getScheduler().runTask(NotJustNameplates.getInstance(), this::remove);
     }
 
     public void setAlignment(@NotNull TextDisplay.TextAlignment alignment) {

@@ -46,26 +46,30 @@ public final class NotJustNameplates extends JavaPlugin {
             });
 
             if (time % 20 != 0) return;
-            nameplateManager.getNameplates().forEach(((uuid, nameplate) -> {
-                Player player = Bukkit.getPlayer(uuid);
-                if (player == null || !player.isOnline()) return;
-                for (Map.Entry<String, DisplayContent> entry : config.getDisplayContents().entrySet()) {
-                    String id = entry.getKey();
-                    if (id.equalsIgnoreCase("default")) continue;
-                    if (player.hasPermission("notjustnameplates.display." + id)) {
-                        nameplate.setContent(entry.getValue());
-                        return;
-                    }
-                }
-                nameplate.setContent(config.getDisplayContent("default"));
-            }));
-
+            updateNameplatesBasedOnPermission();
         }, 1, 1);
     }
 
     public void reloadPluginConfig() {
         config = new NJNConfig(this);
         nameplateManager.reloadNameplates();
+        updateNameplatesBasedOnPermission();
+    }
+
+    private void updateNameplatesBasedOnPermission() {
+        nameplateManager.getNameplates().forEach(((uuid, nameplate) -> {
+            Player player = Bukkit.getPlayer(uuid);
+            if (player == null || !player.isOnline()) return;
+            for (Map.Entry<String, DisplayContent> entry : config.getDisplayContents().entrySet()) {
+                String id = entry.getKey();
+                if (id.equalsIgnoreCase("default")) continue;
+                if (player.hasPermission("notjustnameplates.display." + id)) {
+                    nameplate.setContent(entry.getValue());
+                    return;
+                }
+            }
+            nameplate.setContent(config.getDisplayContent("default"));
+        }));
     }
 
     public TeamManager getTeamManager() {

@@ -6,6 +6,8 @@ import org.bukkit.Color;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Display;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -20,6 +22,13 @@ public class NJNConfig {
 
     protected NJNConfig(NotJustNameplates plugin) {
         this.plugin = plugin;
+
+        plugin.getServer().getPluginManager().getPermissions().forEach(permission -> {
+            if (permission.getName().startsWith("notjustnameplates.display.")) {
+                plugin.getServer().getPluginManager().removePermission(permission);
+            }
+        });
+
         plugin.saveDefaultConfig();
         plugin.reloadConfig();
 
@@ -86,6 +95,8 @@ public class NJNConfig {
             String backgroundColor = frameSection.getString("background");
             displayContent.addFrame(new DisplayFrame(text, colorFromHex(backgroundColor)));
         });
+        Permission permission = new Permission("notjustnameplates.display." + displayContentSection.getName(), "Allows player to use " + displayContentSection.getName() + " nameplate", PermissionDefault.FALSE);
+        plugin.getServer().getPluginManager().addPermission(permission);
         return displayContent;
     }
 
