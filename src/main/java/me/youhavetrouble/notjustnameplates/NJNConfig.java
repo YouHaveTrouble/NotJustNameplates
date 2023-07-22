@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Display;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -64,7 +65,7 @@ public class NJNConfig {
         return displayContents.get(name);
     }
 
-    protected HashMap<String, DisplayContent> getDisplayContents() {
+    public HashMap<String, DisplayContent> getDisplayContents() {
         return displayContents;
     }
 
@@ -91,7 +92,7 @@ public class NJNConfig {
         framesSection.getKeys(false).forEach(frameName -> {
             ConfigurationSection frameSection = framesSection.getConfigurationSection(frameName);
             if (frameSection == null) return;
-            String text = frameSection.getString("text");
+            String text = frameSection.getString("text", null);
             String backgroundColor = frameSection.getString("background");
             displayContent.addFrame(new DisplayFrame(text, colorFromHex(backgroundColor)));
         });

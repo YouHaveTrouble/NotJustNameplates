@@ -81,8 +81,8 @@ public class Nameplate {
         player.addPassenger(textDisplay);
     }
 
-    public void setContent(@NotNull DisplayContent content) {
-        if (this.content == content) return;
+    public void setContent(DisplayContent content) {
+        if (content == null || this.content == content) return;
         this.content = content;
         Bukkit.getScheduler().runTask(NotJustNameplates.getInstance(), this::remove);
     }

@@ -9,10 +9,6 @@ nameplates:
     frames:
       1:
         text: "%displayname%"
-        background: "#0000FFAA"
-      2:
-        text: "%displayname%"
-        background: "#FF0000AA"
 
     # Billboard options are as follows:
     # "center" - pivots around center point

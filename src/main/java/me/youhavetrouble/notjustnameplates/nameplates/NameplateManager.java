@@ -30,7 +30,7 @@ public class NameplateManager implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
         UUID joinerUuid = event.getPlayer().getUniqueId();
-        DisplayContent displayContent = NotJustNameplates.getPluginConfig().getDisplayContent("default");
+        DisplayContent displayContent = NotJustNameplates.getInstance().getDisplayContentForPlayerBasedOnPermission(event.getPlayer());
         if (displayContent == null) return;
         nameplates.put(joinerUuid, new Nameplate(joinerUuid, displayContent));
     }
@@ -96,9 +96,14 @@ public class NameplateManager implements Listener {
         this.nameplates.clear();
         for (Player player : Bukkit.getOnlinePlayers()) {
             DisplayContent displayContent = NotJustNameplates.getPluginConfig().getDisplayContent("default");
-            nameplates.put(player.getUniqueId(), new Nameplate(player.getUniqueId(), displayContent != null ? displayContent : new DisplayContent()));
+            for (Map.Entry<String, DisplayContent> entry : NotJustNameplates.getPluginConfig().getDisplayContents().entrySet()) {
+                if (player.hasPermission("notjustnameplates.display." + entry.getKey())) {
+                    displayContent = entry.getValue();
+                    break;
+                }
+            }
+            nameplates.put(player.getUniqueId(), new Nameplate(player.getUniqueId(), displayContent));
         }
-
     }
 
     public Map<UUID, Nameplate> getNameplates() {

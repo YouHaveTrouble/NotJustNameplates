@@ -2,6 +2,7 @@ package me.youhavetrouble.notjustnameplates;
 
 import me.youhavetrouble.notjustnameplates.commands.MainCommand;
 import me.youhavetrouble.notjustnameplates.displays.DisplayContent;
+import me.youhavetrouble.notjustnameplates.nameplates.Nameplate;
 import me.youhavetrouble.notjustnameplates.nameplates.NameplateManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -64,16 +65,20 @@ public final class NotJustNameplates extends JavaPlugin {
         nameplateManager.getNameplates().forEach(((uuid, nameplate) -> {
             Player player = Bukkit.getPlayer(uuid);
             if (player == null || !player.isOnline()) return;
-            for (Map.Entry<String, DisplayContent> entry : config.getDisplayContents().entrySet()) {
-                String id = entry.getKey();
-                if (id.equalsIgnoreCase("default")) continue;
-                if (player.hasPermission("notjustnameplates.display." + id)) {
-                    nameplate.setContent(entry.getValue());
-                    return;
-                }
-            }
-            nameplate.setContent(config.getDisplayContent("default"));
+            nameplate.setContent(getDisplayContentForPlayerBasedOnPermission(player));
         }));
+    }
+
+    public DisplayContent getDisplayContentForPlayerBasedOnPermission(Player player) {
+        if (player == null) return null;
+        for (Map.Entry<String, DisplayContent> entry : config.getDisplayContents().entrySet()) {
+            String id = entry.getKey();
+            if (id.equalsIgnoreCase("default")) continue;
+            if (player.hasPermission("notjustnameplates.display." + id)) {
+                return entry.getValue();
+            }
+        }
+        return config.getDisplayContent("default");
     }
 
     public TeamManager getTeamManager() {
