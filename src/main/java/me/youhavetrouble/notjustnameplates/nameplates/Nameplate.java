@@ -2,6 +2,7 @@ package me.youhavetrouble.notjustnameplates.nameplates;
 
 import me.youhavetrouble.notjustnameplates.NotJustNameplates;
 import me.youhavetrouble.notjustnameplates.displays.DisplayContent;
+import me.youhavetrouble.notjustnameplates.hooks.PAPIHook;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -166,6 +167,10 @@ public class Nameplate {
         Component component = MiniMessage.miniMessage().deserialize(text);
 
         if (player == null || !player.isOnline()) return component;
+
+        if (NotJustNameplates.isPapiHooked()) {
+            component = PAPIHook.setPlaceholders(component, player);
+        }
 
         component = component.replaceText(builder -> {
             builder.matchLiteral("%displayname%");

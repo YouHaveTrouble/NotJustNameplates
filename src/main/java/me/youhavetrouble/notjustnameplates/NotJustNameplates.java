@@ -20,10 +20,13 @@ public final class NotJustNameplates extends JavaPlugin {
     private final TeamManager teamManager = new TeamManager();
     private NameplateManager nameplateManager = null;
 
+    private static boolean papiHook = false;
+
     @Override
     public void onEnable() {
         instance = this;
         config = new NJNConfig(this);
+        papiHook = Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null && Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
 
         DefaultPermissions.registerPermission("notjustnameplates.seeown", "Allows a player to see their own nameplate", PermissionDefault.FALSE);
         DefaultPermissions.registerPermission("notjustnameplates.command", "Allows a player to use the /njn command", PermissionDefault.TRUE);
@@ -52,6 +55,7 @@ public final class NotJustNameplates extends JavaPlugin {
 
     public void reloadPluginConfig() {
         config = new NJNConfig(this);
+        papiHook = Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null && Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
         nameplateManager.reloadNameplates();
         updateNameplatesBasedOnPermission();
     }
@@ -90,6 +94,10 @@ public final class NotJustNameplates extends JavaPlugin {
 
     public static NJNConfig getPluginConfig() {
         return config;
+    }
+
+    public static boolean isPapiHooked() {
+        return papiHook;
     }
 
 }

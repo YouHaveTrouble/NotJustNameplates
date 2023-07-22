@@ -15,10 +15,12 @@ java {
 
 repositories {
     maven("https://repo.purpurmc.org/snapshots/")
+    maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
 }
 
 dependencies {
     paperweight.paperDevBundle("1.20.1-R0.1-SNAPSHOT", "org.purpurmc.purpur")
+    compileOnly("me.clip:placeholderapi:2.11.3")
 }
 
 tasks {
