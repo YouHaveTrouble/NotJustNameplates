@@ -1,23 +1,13 @@
-# Config is subject to change, take regular backups
+# Complete documetation of config values:
+# https://github.com/YouHaveTrouble/NotJustNameplates/wiki/Configuration
 nameplates:
   default:
-    # How often to switch betwwen frames (in ticks)
-    # If set to 0, transitions will be disabled
     refresh-rate: 10
-
-    # Animation frames
+    billboard: "vertical"
     frames:
       1:
         text: "%displayname%"
 
-    # Billboard options are as follows:
-    # "center" - pivots around center point
-    # "vertical" - pivots around vertical axis
-    # "horizontal" - pivots around horizontal axis
-    # "fixed" - no rotation
-    billboard: "vertical"
-
 messages:
   config-reloaded: "<aqua>NJN Config reloaded."
   no-permission: "<red>You do not have permission to use this."
-
