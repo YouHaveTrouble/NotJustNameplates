@@ -99,7 +99,7 @@ public class NJNConfig {
             String backgroundColor = frameSection.getString("background");
             float scaleX = (float) frameSection.getDouble("scale-x", 1);
             float scaleY = (float) frameSection.getDouble("scale-y", 1);
-            float scaleZ = (float) frameSection.getDouble("offset-z", 1);
+            float scaleZ = (float) frameSection.getDouble("scale-z", 1);
             displayContent.addFrame(new DisplayFrame(text, colorFromHex(backgroundColor), scaleX, scaleY, scaleZ));
         });
         Permission permission = new Permission("notjustnameplates.display." + displayContentSection.getName(), "Allows player to use " + displayContentSection.getName() + " nameplate", PermissionDefault.FALSE);
