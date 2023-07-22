@@ -7,6 +7,7 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -25,6 +26,13 @@ public class NameplateManager implements Listener {
     public NameplateManager(NotJustNameplates plugin) {
         reloadNameplates();
         Bukkit.getScheduler().runTaskTimer(plugin, () -> nameplates.values().forEach(Nameplate::update), 0, 1);
+
+        // Remove all orphan nameplates
+        Bukkit.getScheduler().runTaskTimer(plugin, () -> Bukkit.getWorlds().forEach(world -> world.getEntities().forEach(entity -> {
+            if (!(entity instanceof TextDisplay textDisplay)) return;
+            if (textDisplay.getPersistentDataContainer().has(Nameplate.NAMEPLATE_KEY)) return;
+            textDisplay.remove();
+        })), 100, 100);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
