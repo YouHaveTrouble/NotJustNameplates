@@ -16,4 +16,8 @@ public class PAPIHook {
         return component;
     }
 
+    public static String setPlaceholders(String string, OfflinePlayer offlinePlayer) {
+        return PlaceholderAPI.setPlaceholders(offlinePlayer, string);
+    }
+
 }
