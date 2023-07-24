@@ -2,8 +2,10 @@ package me.youhavetrouble.notjustnameplates;
 
 import me.youhavetrouble.notjustnameplates.commands.MainCommand;
 import me.youhavetrouble.notjustnameplates.displays.DisplayContent;
-import me.youhavetrouble.notjustnameplates.nameplates.Nameplate;
 import me.youhavetrouble.notjustnameplates.nameplates.NameplateManager;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionDefault;
@@ -23,9 +25,12 @@ public final class NotJustNameplates extends JavaPlugin {
 
     private static boolean papiHook = false;
 
+    public static final MiniMessage miniMessage = null;
+
     @Override
     public void onEnable() {
         instance = this;
+
         config = new NJNConfig(this);
         papiHook = Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null && Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
 

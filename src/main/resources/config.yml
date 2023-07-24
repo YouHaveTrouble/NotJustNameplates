@@ -6,7 +6,7 @@ nameplates:
     billboard: "vertical"
     frames:
       1:
-        text: "%displayname%"
+        text: "<placeholder:displayname>"
 
 messages:
   config-reloaded: "<aqua>NJN Config reloaded."
