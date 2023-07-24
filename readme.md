@@ -8,3 +8,7 @@ features offered by display entities, such as text with multiple lines, text col
 ## Support
 
 Check [the wiki](https://github.com/YouHaveTrouble/NotJustNameplates/wiki) for more information on how to use the plugin and how to receive support.
+
+## Downloads
+
+#### You can download the plugin on its [modrinth page](https://modrinth.com/plugin/notjustnameplates).
