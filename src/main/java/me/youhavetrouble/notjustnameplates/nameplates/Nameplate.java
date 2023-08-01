@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Transformation;
 import org.jetbrains.annotations.NotNull;
 import org.joml.AxisAngle4f;
@@ -139,6 +140,10 @@ public class Nameplate {
             return;
         }
         if (player.getGameMode() == GameMode.SPECTATOR) {
+            remove();
+            return;
+        }
+        if (player.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
             remove();
             return;
         }
