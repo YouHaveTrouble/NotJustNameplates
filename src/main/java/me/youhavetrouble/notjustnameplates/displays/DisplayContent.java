@@ -10,7 +10,7 @@ import java.util.List;
 public class DisplayContent {
 
     private final List<DisplayFrame> frames = new ArrayList<>();
-    private int refreshRate, interpolationDuration, interpolationDelay, currentFrame;
+    private int refreshRate, interpolationDuration, interpolationDelay, currentFrame, viewRange;
     private Display.Billboard billboard = Display.Billboard.HORIZONTAL;
     private boolean seeThrough = false;
 
@@ -58,6 +58,14 @@ public class DisplayContent {
 
     public int getInterpolationDuration() {
         return interpolationDuration;
+    }
+
+    public void setViewRange(int viewRange) {
+        this.viewRange = viewRange;
+    }
+
+    public int getViewRange() {
+        return viewRange;
     }
 
     public void addFrame(DisplayFrame frame) {

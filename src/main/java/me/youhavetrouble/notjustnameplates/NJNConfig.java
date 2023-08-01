@@ -2,6 +2,7 @@ package me.youhavetrouble.notjustnameplates;
 
 import me.youhavetrouble.notjustnameplates.displays.DisplayContent;
 import me.youhavetrouble.notjustnameplates.displays.DisplayFrame;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -83,6 +84,7 @@ public class NJNConfig {
         displayContent.setSeeThrough(displayContentSection.getBoolean("see-through", false));
         displayContent.setInterpolationDelay(displayContentSection.getInt("interpolation-delay", displayContent.getRefreshRate()));
         displayContent.setInterpolationDuration(displayContentSection.getInt("interpolation-duration", displayContent.getRefreshRate()));
+        displayContent.setViewRange(displayContentSection.getInt("view-range", Bukkit.spigot().getSpigotConfig().getInt("world-settings.default.entity-tracking-range.players", 48)));
 
         Display.Billboard billboard = Display.Billboard.HORIZONTAL;
         try {
@@ -100,7 +102,17 @@ public class NJNConfig {
             float scaleX = (float) frameSection.getDouble("scale-x", 1);
             float scaleY = (float) frameSection.getDouble("scale-y", 1);
             float scaleZ = (float) frameSection.getDouble("scale-z", 1);
-            displayContent.addFrame(new DisplayFrame(text, colorFromHex(backgroundColor), scaleX, scaleY, scaleZ));
+            boolean shadowed = frameSection.getBoolean("shadowed", false);
+            byte textOpacity = (byte) Math.min(Math.max(frameSection.getInt("text-opacity", 255), 0), 255) ;
+            displayContent.addFrame(new DisplayFrame(
+                    text,
+                    colorFromHex(backgroundColor),
+                    scaleX,
+                    scaleY,
+                    scaleZ,
+                    shadowed,
+                    textOpacity
+            ));
         });
         Permission permission = new Permission("notjustnameplates.display." + displayContentSection.getName(), "Allows player to use " + displayContentSection.getName() + " nameplate", PermissionDefault.FALSE);
         plugin.getServer().getPluginManager().addPermission(permission);

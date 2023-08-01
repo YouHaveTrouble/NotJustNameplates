@@ -4,9 +4,6 @@ import me.youhavetrouble.notjustnameplates.NotJustNameplates;
 import me.youhavetrouble.notjustnameplates.displays.DisplayContent;
 import me.youhavetrouble.notjustnameplates.text.TextParser;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
@@ -63,9 +60,12 @@ public class Nameplate {
                     textDisplay.setAlignment(alignment);
                     textDisplay.setBillboard(this.content.getBillboard());
                     textDisplay.setSeeThrough(this.content.getSeeThrough());
+                    textDisplay.setViewRange(content.getViewRange());
                     textDisplay.setShadowRadius(0);
                     textDisplay.setInterpolationDuration(content.getInterpolationDuration());
                     textDisplay.setInterpolationDelay(content.getInterpolationDelay());
+                    textDisplay.setShadowed(content.getCurrentFrame().shadowed());
+                    textDisplay.setTextOpacity(content.getCurrentFrame().textOpacity());
 
                     Color backgroundColor = this.content.getCurrentFrame().backgroundColor();
                     if (backgroundColor != null) textDisplay.setBackgroundColor(backgroundColor);
@@ -152,6 +152,8 @@ public class Nameplate {
         textDisplay.text(parseText(this.content.getCurrentFrame().text(), player));
 
         textDisplay.setBillboard(this.content.getBillboard());
+        textDisplay.setShadowed(content.getCurrentFrame().shadowed());
+        textDisplay.setTextOpacity(content.getCurrentFrame().textOpacity());
 
         textDisplay.setTransformation(new Transformation(
                 new Vector3f(0, heightOffset, 0), // offset
