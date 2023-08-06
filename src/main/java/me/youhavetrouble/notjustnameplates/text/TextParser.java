@@ -29,18 +29,22 @@ public class TextParser {
             final String placeholder = argumentQueue.popOr("placeholder tag requires an argument").value();
             switch (placeholder) {
                 case "name" -> {
-                    return Tag.selfClosingInserting(player.name()) ;
+                    return Tag.selfClosingInserting(player.name());
                 }
                 case "displayname" -> {
                     return Tag.selfClosingInserting(player.displayName());
                 }
                 default -> {
-                    if (NotJustNameplates.isPapiHooked()) {
-                        final String parsedPlaceholder = PlaceholderAPI.setPlaceholders(player, '%' + placeholder + '%');
+                    if (!NotJustNameplates.isPapiHooked()) return Tag.selfClosingInserting(Component.text(placeholder));
+
+                    final String parsedPlaceholder = PlaceholderAPI.setPlaceholders(player, '%' + placeholder + '%');
+
+                    if (parsedPlaceholder.contains(LegacyComponentSerializer.SECTION_CHAR + "")) {
                         Component componentPlaceholder = LegacyComponentSerializer.legacySection().deserialize(parsedPlaceholder);
                         return Tag.selfClosingInserting(componentPlaceholder);
                     }
-                    return Tag.selfClosingInserting(Component.text(placeholder));
+
+                    return Tag.selfClosingInserting(MiniMessage.miniMessage().deserialize(parsedPlaceholder));
                 }
             }
 
