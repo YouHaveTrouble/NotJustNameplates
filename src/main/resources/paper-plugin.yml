@@ -12,3 +12,10 @@ dependencies:
     required: false
   - name: PremiumVanish
     required: false
+  - name: VanishNoPacket
+    required: false
+load-after:
+  - name: PlaceholderAPI
+  - name: SuperVanish
+  - name: PremiumVanish
+  - name: VanishNoPacket

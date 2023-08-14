@@ -20,15 +20,14 @@ public final class NotJustNameplates extends JavaPlugin {
     private final TeamManager teamManager = new TeamManager();
     private NameplateManager nameplateManager = null;
 
-    private static boolean papiHook, superVanishHook = false;
+    private static boolean papiHook, superVanishHook, vanishNoPacketHook = false;
 
     @Override
     public void onEnable() {
         instance = this;
 
         config = new NJNConfig(this);
-        papiHook = Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null && Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
-        superVanishHook = Bukkit.getPluginManager().isPluginEnabled("SuperVanish") || Bukkit.getPluginManager().isPluginEnabled("PremiumVanish");
+        checkHooks();
 
         DefaultPermissions.registerPermission("notjustnameplates.seeown", "Allows a player to see their own nameplate", PermissionDefault.FALSE);
         DefaultPermissions.registerPermission("notjustnameplates.command", "Allows a player to use the /njn command", PermissionDefault.TRUE);
@@ -57,7 +56,7 @@ public final class NotJustNameplates extends JavaPlugin {
 
     public void reloadPluginConfig() {
         config = new NJNConfig(this);
-        papiHook = Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null && Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
+        checkHooks();
         nameplateManager.reloadNameplates();
         updateNameplatesBasedOnPermission();
     }
@@ -80,6 +79,12 @@ public final class NotJustNameplates extends JavaPlugin {
             }
         }
         return config.getDisplayContent("default");
+    }
+
+    private void checkHooks() {
+        papiHook = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
+        superVanishHook = Bukkit.getPluginManager().isPluginEnabled("SuperVanish") || Bukkit.getPluginManager().isPluginEnabled("PremiumVanish");
+        vanishNoPacketHook = Bukkit.getPluginManager().isPluginEnabled("VanishNoPacket");
     }
 
     public TeamManager getTeamManager() {
@@ -108,5 +113,9 @@ public final class NotJustNameplates extends JavaPlugin {
 
     public static boolean isSuperVanishHooked() {
         return superVanishHook;
+    }
+
+    public static boolean isVanishNoPacketHooked() {
+        return vanishNoPacketHook;
     }
 }

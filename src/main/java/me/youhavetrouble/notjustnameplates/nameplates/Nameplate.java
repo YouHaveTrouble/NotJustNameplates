@@ -19,6 +19,9 @@ import org.bukkit.util.Transformation;
 import org.jetbrains.annotations.NotNull;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
+import org.kitteh.vanish.VanishCheck;
+import org.kitteh.vanish.VanishPlugin;
+import org.kitteh.vanish.staticaccess.VanishNoPacket;
 
 import java.util.UUID;
 
@@ -152,6 +155,14 @@ public class Nameplate {
         if (NotJustNameplates.isSuperVanishHooked() && VanishAPI.isInvisible(player)) {
             remove();
             return;
+        }
+
+        if (NotJustNameplates.isVanishNoPacketHooked()) {
+            VanishPlugin vanishPlugin = (VanishPlugin) Bukkit.getPluginManager().getPlugin("VanishNoPacket");
+            if (vanishPlugin != null && vanishPlugin.getManager().isVanished(player)) {
+                remove();
+                return;
+            }
         }
 
         createDisplayEntity();
