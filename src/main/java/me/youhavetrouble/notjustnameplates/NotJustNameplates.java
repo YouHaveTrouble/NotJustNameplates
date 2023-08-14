@@ -3,9 +3,6 @@ package me.youhavetrouble.notjustnameplates;
 import me.youhavetrouble.notjustnameplates.commands.MainCommand;
 import me.youhavetrouble.notjustnameplates.displays.DisplayContent;
 import me.youhavetrouble.notjustnameplates.nameplates.NameplateManager;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionDefault;
@@ -23,9 +20,7 @@ public final class NotJustNameplates extends JavaPlugin {
     private final TeamManager teamManager = new TeamManager();
     private NameplateManager nameplateManager = null;
 
-    private static boolean papiHook = false;
-
-    public static final MiniMessage miniMessage = null;
+    private static boolean papiHook, superVanishHook = false;
 
     @Override
     public void onEnable() {
@@ -33,6 +28,7 @@ public final class NotJustNameplates extends JavaPlugin {
 
         config = new NJNConfig(this);
         papiHook = Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null && Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
+        superVanishHook = Bukkit.getPluginManager().isPluginEnabled("SuperVanish") || Bukkit.getPluginManager().isPluginEnabled("PremiumVanish");
 
         DefaultPermissions.registerPermission("notjustnameplates.seeown", "Allows a player to see their own nameplate", PermissionDefault.FALSE);
         DefaultPermissions.registerPermission("notjustnameplates.command", "Allows a player to use the /njn command", PermissionDefault.TRUE);
@@ -110,4 +106,7 @@ public final class NotJustNameplates extends JavaPlugin {
         return papiHook;
     }
 
+    public static boolean isSuperVanishHooked() {
+        return superVanishHook;
+    }
 }

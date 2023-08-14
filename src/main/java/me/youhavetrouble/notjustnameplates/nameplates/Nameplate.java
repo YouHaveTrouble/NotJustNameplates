@@ -1,5 +1,6 @@
 package me.youhavetrouble.notjustnameplates.nameplates;
 
+import de.myzelyam.api.vanish.VanishAPI;
 import me.youhavetrouble.notjustnameplates.NotJustNameplates;
 import me.youhavetrouble.notjustnameplates.displays.DisplayContent;
 import me.youhavetrouble.notjustnameplates.text.TextParser;
@@ -144,6 +145,11 @@ public class Nameplate {
             return;
         }
         if (player.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
+            remove();
+            return;
+        }
+
+        if (NotJustNameplates.isSuperVanishHooked() && VanishAPI.isInvisible(player)) {
             remove();
             return;
         }

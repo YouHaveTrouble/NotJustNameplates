@@ -8,3 +8,7 @@ website: https://youhavetrouble.me
 dependencies:
   - name: PlaceholderAPI
     required: false
+  - name: SuperVanish
+    required: false
+  - name: PremiumVanish
+    required: false
