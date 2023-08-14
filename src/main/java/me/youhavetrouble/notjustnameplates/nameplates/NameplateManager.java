@@ -30,7 +30,10 @@ public class NameplateManager implements Listener {
         // Remove all orphan nameplates
         Bukkit.getScheduler().runTaskTimer(plugin, () -> Bukkit.getWorlds().forEach(world -> world.getEntities().forEach(entity -> {
             if (!(entity instanceof TextDisplay textDisplay)) return;
-            if (textDisplay.getPersistentDataContainer().has(Nameplate.NAMEPLATE_KEY)) return;
+            if (!textDisplay.getPersistentDataContainer().has(Nameplate.NAMEPLATE_KEY)) return;
+            for (Nameplate nameplate : nameplates.values()) {
+                if (nameplate.getEntity() == textDisplay) return;
+            }
             textDisplay.remove();
         })), 100, 100);
     }
