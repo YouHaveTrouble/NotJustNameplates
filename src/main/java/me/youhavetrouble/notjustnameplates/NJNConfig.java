@@ -9,6 +9,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Display;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
+import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -102,14 +103,16 @@ public class NJNConfig {
             float scaleX = (float) frameSection.getDouble("scale-x", 1);
             float scaleY = (float) frameSection.getDouble("scale-y", 1);
             float scaleZ = (float) frameSection.getDouble("scale-z", 1);
+            float offsetX = (float) frameSection.getDouble("offset-x", 0);
+            float offsetY = (float) frameSection.getDouble("offset-y", 0);
+            float offsetZ = (float) frameSection.getDouble("offset-z", 0);
             boolean shadowed = frameSection.getBoolean("shadowed", false);
-            byte textOpacity = (byte) Math.min(Math.max(frameSection.getInt("text-opacity", 255), 0), 255) ;
+            byte textOpacity = (byte) Math.min(Math.max(frameSection.getInt("text-opacity", 255), 0), 255);
             displayContent.addFrame(new DisplayFrame(
                     text,
                     colorFromHex(backgroundColor),
-                    scaleX,
-                    scaleY,
-                    scaleZ,
+                    new Vector3f(scaleX, scaleY, scaleZ),
+                    new Vector3f(offsetX, offsetY, offsetZ),
                     shadowed,
                     textOpacity
             ));

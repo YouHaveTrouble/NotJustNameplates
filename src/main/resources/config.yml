@@ -3,10 +3,11 @@
 nameplates:
   default:
     refresh-rate: 10
-    billboard: "vertical"
+    billboard: "center"
     frames:
       1:
         text: "<placeholder:displayname>"
+        offset-y: 0.2
 
 messages:
   config-reloaded: "<aqua>NJN Config reloaded."

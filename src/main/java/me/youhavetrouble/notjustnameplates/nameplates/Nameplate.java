@@ -19,9 +19,7 @@ import org.bukkit.util.Transformation;
 import org.jetbrains.annotations.NotNull;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
-import org.kitteh.vanish.VanishCheck;
 import org.kitteh.vanish.VanishPlugin;
-import org.kitteh.vanish.staticaccess.VanishNoPacket;
 
 import java.util.UUID;
 
@@ -32,7 +30,6 @@ public class Nameplate {
     protected boolean forceHide = false;
     private DisplayContent content;
     private final UUID playerUuid;
-    private final float heightOffset = 0.7f;
     private TextDisplay.TextAlignment alignment = TextDisplay.TextAlignment.CENTER;
     private boolean visibleForOwner = false;
 
@@ -78,13 +75,9 @@ public class Nameplate {
                     textDisplay.text(parseText(this.content.getCurrentFrame().text(), player));
 
                     textDisplay.setTransformation(new Transformation(
-                            new Vector3f(0, heightOffset, 0), // offset
+                            content.getCurrentFrame().offset(),
                             new AxisAngle4f(0, 0, 0, 0), // left rotation
-                            new Vector3f(
-                                    content.getCurrentFrame().scaleX(),
-                                    content.getCurrentFrame().scaleY(),
-                                    content.getCurrentFrame().scaleZ()
-                            ), // scale
+                            content.getCurrentFrame().scale(),
                             new AxisAngle4f(0, 0, 0, 0) // right rotation
                     ));
                 });
@@ -176,15 +169,10 @@ public class Nameplate {
         textDisplay.setBillboard(this.content.getBillboard());
         textDisplay.setShadowed(content.getCurrentFrame().shadowed());
         textDisplay.setTextOpacity(content.getCurrentFrame().textOpacity());
-
         textDisplay.setTransformation(new Transformation(
-                new Vector3f(0, heightOffset, 0), // offset
+                content.getCurrentFrame().offset(),
                 new AxisAngle4f(0, 0, 0, 0), // left rotation
-                new Vector3f(
-                        content.getCurrentFrame().scaleX(),
-                        content.getCurrentFrame().scaleY(),
-                        content.getCurrentFrame().scaleZ()
-                ), // scale
+                content.getCurrentFrame().scale(),
                 new AxisAngle4f(0, 0, 0, 0) // right rotation
         ));
 
@@ -194,9 +182,6 @@ public class Nameplate {
         } else {
             textDisplay.setBackgroundColor(backgroundColor);
         }
-
-        textDisplay.setInterpolationDuration(content.getInterpolationDuration());
-        textDisplay.setInterpolationDelay(content.getInterpolationDelay());
 
         setVisibleForOwner(this.visibleForOwner || player.hasPermission("notjustnameplates.seeown"));
 
