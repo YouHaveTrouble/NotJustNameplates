@@ -1,16 +1,15 @@
 plugins {
     `java-library`
-    id("io.papermc.paperweight.userdev") version "1.5.5"
-    id("xyz.jpenilla.run-paper") version "2.1.0" // Adds runServer and runMojangMappedServer tasks for testing
+    id("io.papermc.paperweight.userdev") version "1.6.3"
+    id("xyz.jpenilla.run-paper") version "2.2.4" // Adds runServer and runMojangMappedServer tasks for testing
 }
 
 group = "me.youhavetrouble"
-version = "1.6.0"
+version = "1.7.0"
 description = "Nameplates using display entities"
 
 java {
-    // Configure the java toolchain. This allows gradle to auto-provision JDK 17 on systems that only have JDK 8 installed for example.
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
 repositories {
@@ -20,20 +19,17 @@ repositories {
 }
 
 dependencies {
-    paperweight.paperDevBundle("1.20.4-R0.1-SNAPSHOT", "org.purpurmc.purpur")
+    paperweight.devBundle("org.purpurmc","1.20.6-R0.1-SNAPSHOT")
     compileOnly("me.clip:placeholderapi:2.11.3")
     compileOnly("com.github.LeonMangler:SuperVanish:6.2.17")
     compileOnly("com.github.mbax:VanishNoPacket:3.22")
 }
 
 tasks {
-    assemble {
-        dependsOn(reobfJar)
-    }
 
     compileJava {
         options.encoding = Charsets.UTF_8.name()
-        options.release.set(17)
+        options.release.set(21)
     }
     javadoc {
         options.encoding = Charsets.UTF_8.name()
