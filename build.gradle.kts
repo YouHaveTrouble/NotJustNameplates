@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-    paperweight.devBundle("org.purpurmc","1.20.6-R0.1-SNAPSHOT")
+    paperweight.devBundle("org.purpurmc.purpur","1.20.6-R0.1-SNAPSHOT")
     compileOnly("me.clip:placeholderapi:2.11.3")
     compileOnly("com.github.LeonMangler:SuperVanish:6.2.17")
     compileOnly("com.github.mbax:VanishNoPacket:3.22")
