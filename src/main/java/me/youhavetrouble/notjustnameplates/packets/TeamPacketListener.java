@@ -29,7 +29,6 @@ public class TeamPacketListener extends ChannelDuplexHandler {
             }
         }
 
-        NotJustNameplates.getInstance().getLogger().info(msg.toString());
         PacketTeam packetTeam = PacketTeam.create(originalPacket.getName(), originalPacket.getParameters().orElse(null));
         ClientboundSetPlayerTeamPacket newPacket = ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(packetTeam, true);
         super.write(ctx, newPacket, promise);
