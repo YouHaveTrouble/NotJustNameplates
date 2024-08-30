@@ -2,6 +2,7 @@ package me.youhavetrouble.notjustnameplates.nameplates;
 
 import me.youhavetrouble.notjustnameplates.NotJustNameplates;
 import me.youhavetrouble.notjustnameplates.displays.DisplayContent;
+import me.youhavetrouble.notjustnameplates.packets.TeamPacketListener;
 import net.minecraft.world.phys.AABB;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -40,6 +41,7 @@ public class NameplateManager implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
+        TeamPacketListener.addPlayer(event.getPlayer());
         UUID joinerUuid = event.getPlayer().getUniqueId();
         DisplayContent displayContent = NotJustNameplates.getInstance().getDisplayContentForPlayerBasedOnPermission(event.getPlayer());
         if (displayContent == null) return;
@@ -100,6 +102,11 @@ public class NameplateManager implements Listener {
         if (nameplate == null) return;
         nameplate.remove();
         event.setShouldRetry(true);
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        TeamPacketListener.removePlayer(event.getPlayer());
     }
 
     public void reloadNameplates() {
