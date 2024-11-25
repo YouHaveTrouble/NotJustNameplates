@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "me.youhavetrouble"
-version = "1.9.0"
+version = "1.10.0"
 description = "Nameplates using display entities"
 
 java {
@@ -13,14 +13,14 @@ java {
 }
 
 repositories {
-    maven("https://repo.purpurmc.org/snapshots/")
-    maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
     maven("https://jitpack.io")
+    maven("https://repo.purpurmc.org/snapshots/")
+    maven("https://repo.extendedclip.com/releases/")
 }
 
 dependencies {
-    paperweight.devBundle("org.purpurmc.purpur","1.21.1-R0.1-SNAPSHOT")
-    compileOnly("me.clip:placeholderapi:2.11.3")
+    paperweight.devBundle("org.purpurmc.purpur","1.21.3-R0.1-SNAPSHOT")
+    compileOnly("me.clip:placeholderapi:2.11.5")
     compileOnly("com.github.LeonMangler:SuperVanish:6.2.17")
     compileOnly("com.github.mbax:VanishNoPacket:3.22")
 }
