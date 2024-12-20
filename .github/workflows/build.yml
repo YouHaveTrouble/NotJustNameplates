@@ -1,0 +1,20 @@
+name: Build
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gradle/wrapper-validation-action@v1
+      - uses: actions/setup-java@v3.6.0
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Build with Gradle
+        run: gradle clean build
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifact
+          path: 'build/libs/NotJustNameplates-*.jar'
