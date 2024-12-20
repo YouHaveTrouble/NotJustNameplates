@@ -14,14 +14,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
 import org.purpurmc.purpur.event.entity.EntityTeleportHinderedEvent;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class NameplateManager implements Listener {
 
-    private final HashMap<UUID, Nameplate> nameplates = new HashMap<>();
+    private final Map<UUID, Nameplate> nameplates = new HashMap<>();
+    private final Set<UUID> playersWithNameplatesOff = new HashSet<>();
 
     public NameplateManager(NotJustNameplates plugin) {
         reloadNameplates();
@@ -75,8 +73,8 @@ public class NameplateManager implements Listener {
             Block block = loc.getBlock();
             if (
                     block.getType() == Material.NETHER_PORTAL
-                    || block.getType() == Material.END_PORTAL
-                    || block.getType() == Material.END_GATEWAY
+                            || block.getType() == Material.END_PORTAL
+                            || block.getType() == Material.END_GATEWAY
             ) {
                 inPortal = true;
                 break;
@@ -119,6 +117,35 @@ public class NameplateManager implements Listener {
 
     public Map<UUID, Nameplate> getNameplates() {
         return Collections.unmodifiableMap(nameplates);
+    }
+
+    public Set<UUID> getPlayersWithNameplatesOff() {
+        return playersWithNameplatesOff;
+    }
+
+    /**
+     * Hide or show nameplates of other players for a player
+     * @param player the player to hide nameplates for
+     * @param hide true to hide, false to show
+     */
+    public void nameplatesToggle(Player player, boolean hide) {
+        if (hide) {
+            playersWithNameplatesOff.add(player.getUniqueId());
+            nameplates.values().forEach(nameplate -> {
+                if (nameplate.playerUuid.equals(player.getUniqueId())) return;
+                TextDisplay display = nameplate.getEntity();
+                if (display == null) return;
+                player.hideEntity(NotJustNameplates.getInstance(), display);
+            });
+            return;
+        }
+        playersWithNameplatesOff.remove(player.getUniqueId());
+        nameplates.values().forEach(nameplate -> {
+            if (nameplate.playerUuid.equals(player.getUniqueId())) return;
+            TextDisplay display = nameplate.getEntity();
+            if (display == null) return;
+            player.showEntity(NotJustNameplates.getInstance(), display);
+        });
     }
 
 }

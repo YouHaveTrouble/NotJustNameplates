@@ -18,7 +18,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Transformation;
 import org.jetbrains.annotations.NotNull;
 import org.joml.AxisAngle4f;
-import org.joml.Vector3f;
 import org.kitteh.vanish.VanishPlugin;
 
 import java.util.UUID;
@@ -29,7 +28,7 @@ public class Nameplate {
 
     protected boolean forceHide = false;
     private DisplayContent content;
-    private final UUID playerUuid;
+    public final UUID playerUuid;
     private TextDisplay.TextAlignment alignment = TextDisplay.TextAlignment.CENTER;
     private boolean visibleForOwner = false;
 
@@ -80,6 +79,14 @@ public class Nameplate {
                             content.getCurrentFrame().scale(),
                             new AxisAngle4f(0, 0, 0, 0) // right rotation
                     ));
+
+                    NotJustNameplates.getInstance().getNameplateManager().getPlayersWithNameplatesOff().forEach(uuid -> {
+                        Player playerWithNameplatesOff = Bukkit.getPlayer(uuid);
+                        if (playerWithNameplatesOff != null) {
+                            playerWithNameplatesOff.hideEntity(NotJustNameplates.getInstance(), textDisplay);
+                        }
+                    });
+
                 });
         if (!this.visibleForOwner) {
             player.hideEntity(NotJustNameplates.getInstance(), textDisplay);
