@@ -1,11 +1,11 @@
 plugins {
     `java-library`
-    id("io.papermc.paperweight.userdev") version "1.7.1"
-    id("xyz.jpenilla.run-paper") version "2.3.0" // Adds runServer and runMojangMappedServer tasks for testing
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.17"
+    id("xyz.jpenilla.run-paper") version "2.3.1" // Adds runServer and runMojangMappedServer tasks for testing
 }
 
 group = "me.youhavetrouble"
-version = "1.12.0"
+version = "1.13.0"
 description = "Nameplates using display entities"
 
 java {
@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-    paperweight.devBundle("org.purpurmc.purpur","1.21.4-R0.1-SNAPSHOT")
+    paperweight.devBundle("org.purpurmc.purpur","1.21.5-R0.1-SNAPSHOT")
     compileOnly("me.clip:placeholderapi:2.11.5")
     compileOnly("com.github.LeonMangler:SuperVanish:6.2.17")
     compileOnly("com.github.mbax:VanishNoPacket:3.22")
@@ -40,7 +40,7 @@ tasks {
                 "name" to project.name,
                 "version" to project.version,
                 "description" to project.description,
-                "apiVersion" to "1.21"
+                "apiVersion" to "1.21.5"
         )
         inputs.properties(props)
         filesMatching("paper-plugin.yml") {
