@@ -171,6 +171,15 @@ public class Nameplate {
             player.addPassenger(textDisplay);
         }
 
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            if (onlinePlayer == player) continue;
+            if (!onlinePlayer.canSee(player) && onlinePlayer.canSee(textDisplay)) {
+                onlinePlayer.hideEntity(NotJustNameplates.getInstance(), textDisplay);
+            } else if (onlinePlayer.canSee(player) && !onlinePlayer.canSee(textDisplay)) {
+                onlinePlayer.showEntity(NotJustNameplates.getInstance(), textDisplay);
+            }
+        }
+
         textDisplay.text(parseText(this.content.getCurrentFrame().text(), player));
 
         textDisplay.setBillboard(this.content.getBillboard());

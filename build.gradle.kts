@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "me.youhavetrouble"
-version = "1.14.0"
+version = "1.15.0"
 description = "Nameplates using display entities"
 
 java {
@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-    paperweight.devBundle("org.purpurmc.purpur","1.21.7-R0.1-SNAPSHOT")
+    paperweight.devBundle("org.purpurmc.purpur","1.21.8-R0.1-SNAPSHOT")
     compileOnly("me.clip:placeholderapi:2.11.5")
     compileOnly("com.github.LeonMangler:SuperVanish:6.2.17")
     compileOnly("com.github.mbax:VanishNoPacket:3.22")
@@ -40,7 +40,7 @@ tasks {
                 "name" to project.name,
                 "version" to project.version,
                 "description" to project.description,
-                "apiVersion" to "1.21.5"
+                "apiVersion" to "1.21.8"
         )
         inputs.properties(props)
         filesMatching("paper-plugin.yml") {
