@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "me.youhavetrouble"
-version = "1.15.0"
+version = "1.16.0"
 description = "Nameplates using display entities"
 
 java {

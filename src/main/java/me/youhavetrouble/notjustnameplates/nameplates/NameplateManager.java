@@ -52,6 +52,15 @@ public class NameplateManager implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    public void onPlayerSneak(PlayerToggleSneakEvent event) {
+        Player player = event.getPlayer();
+        Nameplate nameplate = nameplates.get(player.getUniqueId());
+        if (nameplate == null) return;
+        if (nameplate.getContent().getCurrentFrame().sneakOverride() == null) return;
+        nameplate.update();
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
 

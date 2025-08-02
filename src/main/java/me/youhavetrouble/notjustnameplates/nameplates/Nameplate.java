@@ -3,6 +3,7 @@ package me.youhavetrouble.notjustnameplates.nameplates;
 import de.myzelyam.api.vanish.VanishAPI;
 import me.youhavetrouble.notjustnameplates.NotJustNameplates;
 import me.youhavetrouble.notjustnameplates.displays.DisplayContent;
+import me.youhavetrouble.notjustnameplates.displays.DisplayFrame;
 import me.youhavetrouble.notjustnameplates.text.TextParser;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -46,9 +47,13 @@ public class Nameplate {
     private void createDisplayEntity() {
         if (textDisplay != null && !textDisplay.isDead()) return;
         if (this.content == null) return;
-        if (content.getCurrentFrame().text() == null) return;
+
         Player player = Bukkit.getPlayer(playerUuid);
         if (player == null) return;
+
+        DisplayFrame currentFrame = player.isSneaking() && content.getCurrentFrame().sneakOverride() != null ? content.getCurrentFrame().sneakOverride() : content.getCurrentFrame();
+
+        if (currentFrame.text() == null) return;
 
         this.textDisplay = (TextDisplay) player.getWorld().spawnEntity(
                 player.getEyeLocation(),
@@ -65,18 +70,18 @@ public class Nameplate {
                     textDisplay.setShadowRadius(0);
                     textDisplay.setInterpolationDuration(content.getInterpolationDuration());
                     textDisplay.setInterpolationDelay(content.getInterpolationDelay());
-                    textDisplay.setShadowed(content.getCurrentFrame().shadowed());
-                    textDisplay.setTextOpacity(content.getCurrentFrame().textOpacity());
+                    textDisplay.setShadowed(currentFrame.shadowed());
+                    textDisplay.setTextOpacity(currentFrame.textOpacity());
 
-                    Color backgroundColor = this.content.getCurrentFrame().backgroundColor();
+                    Color backgroundColor = currentFrame.backgroundColor();
                     if (backgroundColor != null) textDisplay.setBackgroundColor(backgroundColor);
 
-                    textDisplay.text(parseText(this.content.getCurrentFrame().text(), player));
+                    textDisplay.text(parseText(currentFrame.text(), player));
 
                     textDisplay.setTransformation(new Transformation(
-                            content.getCurrentFrame().offset(),
+                            currentFrame.offset(),
                             new AxisAngle4f(0, 0, 0, 0), // left rotation
-                            content.getCurrentFrame().scale(),
+                            currentFrame.scale(),
                             new AxisAngle4f(0, 0, 0, 0) // right rotation
                     ));
 
@@ -98,6 +103,10 @@ public class Nameplate {
         if (content == null || this.content == content) return;
         this.content = content;
         Bukkit.getScheduler().runTask(NotJustNameplates.getInstance(), this::remove);
+    }
+
+    public DisplayContent getContent() {
+        return this.content;
     }
 
     public void setAlignment(@NotNull TextDisplay.TextAlignment alignment) {
@@ -139,10 +148,6 @@ public class Nameplate {
             remove();
             return;
         }
-        if (content.getCurrentFrame().text() == null) {
-            remove();
-            return;
-        }
         if (player.getGameMode() == GameMode.SPECTATOR) {
             remove();
             return;
@@ -151,18 +156,25 @@ public class Nameplate {
             remove();
             return;
         }
-
         if (NotJustNameplates.isSuperVanishHooked() && VanishAPI.isInvisible(player)) {
             remove();
             return;
         }
-
         if (NotJustNameplates.isVanishNoPacketHooked()) {
             VanishPlugin vanishPlugin = (VanishPlugin) Bukkit.getPluginManager().getPlugin("VanishNoPacket");
             if (vanishPlugin != null && vanishPlugin.getManager().isVanished(player)) {
                 remove();
                 return;
             }
+        }
+        if (content == null) {
+            remove();
+            return;
+        }
+        DisplayFrame currentFrame = player.isSneaking() && content.getCurrentFrame().sneakOverride() != null ? content.getCurrentFrame().sneakOverride() : content.getCurrentFrame();
+        if (currentFrame.text() == null) {
+            remove();
+            return;
         }
 
         createDisplayEntity();
@@ -180,19 +192,19 @@ public class Nameplate {
             }
         }
 
-        textDisplay.text(parseText(this.content.getCurrentFrame().text(), player));
+        textDisplay.text(parseText(currentFrame.text(), player));
 
         textDisplay.setBillboard(this.content.getBillboard());
-        textDisplay.setShadowed(content.getCurrentFrame().shadowed());
-        textDisplay.setTextOpacity(content.getCurrentFrame().textOpacity());
+        textDisplay.setShadowed(currentFrame.shadowed());
+        textDisplay.setTextOpacity(currentFrame.textOpacity());
         textDisplay.setTransformation(new Transformation(
-                content.getCurrentFrame().offset(),
+                currentFrame.offset(),
                 new AxisAngle4f(0, 0, 0, 0), // left rotation
-                content.getCurrentFrame().scale(),
+                currentFrame.scale(),
                 new AxisAngle4f(0, 0, 0, 0) // right rotation
         ));
 
-        Color backgroundColor = this.content.getCurrentFrame().backgroundColor();
+        Color backgroundColor = currentFrame.backgroundColor();
         if (backgroundColor == null) {
             textDisplay.setDefaultBackground(true);
         } else {

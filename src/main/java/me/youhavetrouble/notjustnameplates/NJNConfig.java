@@ -98,28 +98,70 @@ public class NJNConfig {
         framesSection.getKeys(false).forEach(frameName -> {
             ConfigurationSection frameSection = framesSection.getConfigurationSection(frameName);
             if (frameSection == null) return;
-            String text = frameSection.getString("text", null);
-            String backgroundColor = frameSection.getString("background");
-            float scaleX = (float) frameSection.getDouble("scale-x", 1);
-            float scaleY = (float) frameSection.getDouble("scale-y", 1);
-            float scaleZ = (float) frameSection.getDouble("scale-z", 1);
-            float offsetX = (float) frameSection.getDouble("offset-x", 0);
-            float offsetY = (float) frameSection.getDouble("offset-y", 0);
-            float offsetZ = (float) frameSection.getDouble("offset-z", 0);
-            boolean shadowed = frameSection.getBoolean("shadowed", false);
-            byte textOpacity = (byte) Math.min(Math.max(frameSection.getInt("text-opacity", 255), 0), 255);
-            displayContent.addFrame(new DisplayFrame(
-                    text,
-                    colorFromHex(backgroundColor),
-                    new Vector3f(scaleX, scaleY, scaleZ),
-                    new Vector3f(offsetX, offsetY, offsetZ),
-                    shadowed,
-                    textOpacity
-            ));
+            ConfigurationSection sneakOverrideSection = frameSection.getConfigurationSection("sneak-override");
+            displayContent.addFrame(parseFrame(frameSection, sneakOverrideSection));
         });
         Permission permission = new Permission("notjustnameplates.display." + displayContentSection.getName(), "Allows player to use " + displayContentSection.getName() + " nameplate", PermissionDefault.FALSE);
         plugin.getServer().getPluginManager().addPermission(permission);
         return displayContent;
+    }
+
+    private DisplayFrame parseFrame(ConfigurationSection frameSection, ConfigurationSection sneakOverrideSection) {
+        String text = frameSection.getString("text", null);
+        String backgroundColor = frameSection.getString("background");
+        float scaleX = (float) frameSection.getDouble("scale-x", 1);
+        float scaleY = (float) frameSection.getDouble("scale-y", 1);
+        float scaleZ = (float) frameSection.getDouble("scale-z", 1);
+        float offsetX = (float) frameSection.getDouble("offset-x", 0);
+        float offsetY = (float) frameSection.getDouble("offset-y", 0);
+        float offsetZ = (float) frameSection.getDouble("offset-z", 0);
+        boolean shadowed = frameSection.getBoolean("shadowed", false);
+        byte textOpacity = (byte) Math.clamp(frameSection.getInt("text-opacity", 255), 0, 255);
+
+        DisplayFrame sneakOverride = null;
+        if (sneakOverrideSection != null) {
+            if (!sneakOverrideSection.isSet("text")) {
+                sneakOverrideSection.set("text", text);
+            }
+            if (!sneakOverrideSection.isSet("background")) {
+                sneakOverrideSection.set("background", backgroundColor);
+            }
+            if (!sneakOverrideSection.isSet("scale-x")) {
+                sneakOverrideSection.set("scale-x", scaleX);
+            }
+            if (!sneakOverrideSection.isSet("scale-y")) {
+                sneakOverrideSection.set("scale-y", scaleY);
+            }
+            if (!sneakOverrideSection.isSet("scale-z")) {
+                sneakOverrideSection.set("scale-z", scaleZ);
+            }
+            if (!sneakOverrideSection.isSet("offset-x")) {
+                sneakOverrideSection.set("offset-x", offsetX);
+            }
+            if (!sneakOverrideSection.isSet("offset-y")) {
+                sneakOverrideSection.set("offset-y", offsetY);
+            }
+            if (!sneakOverrideSection.isSet("offset-z")) {
+                sneakOverrideSection.set("offset-z", offsetZ);
+            }
+            if (!sneakOverrideSection.isSet("shadowed")) {
+                sneakOverrideSection.set("shadowed", shadowed);
+            }
+            if (!sneakOverrideSection.isSet("text-opacity")) {
+                sneakOverrideSection.set("text-opacity", frameSection.getInt("text-opacity", 255));
+            }
+            sneakOverride = parseFrame(sneakOverrideSection, null);
+        }
+
+        return new DisplayFrame(
+                text,
+                colorFromHex(backgroundColor),
+                new Vector3f(scaleX, scaleY, scaleZ),
+                new Vector3f(offsetX, offsetY, offsetZ),
+                shadowed,
+                textOpacity,
+                sneakOverride
+        );
     }
 
     private Color colorFromHex(@Nullable String hex) {
