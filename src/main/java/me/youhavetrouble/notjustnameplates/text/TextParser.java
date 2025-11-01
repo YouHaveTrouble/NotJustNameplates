@@ -1,54 +1,79 @@
 package me.youhavetrouble.notjustnameplates.text;
 
 import me.clip.placeholderapi.PlaceholderAPI;
-import me.youhavetrouble.notjustnameplates.NotJustNameplates;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.tag.Tag;
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class TextParser {
+    private static final Map<String, String> legacyFormatConversions = new HashMap<>() {
+        {
+            put("&0", "<black>");
+            put("&1", "<dark_blue>");
+            put("&2", "<dark_green>");
+            put("&3", "<dark_aqua>");
+            put("&4", "<dark_red>");
+            put("&5", "<dark_purple>");
+            put("&6", "<gold>");
+            put("&7", "<gray>");
+            put("&8", "<dark_gray>");
+            put("&9", "<blue>");
+            put("&a", "<green>");
+            put("&b", "<aqua>");
+            put("&c", "<red>");
+            put("&d", "<light_purple>");
+            put("&e", "<yellow>");
+            put("&f", "<white>");
+            put("&k", "<obf>");
+            put("&l", "<b>");
+            put("&m", "<st>");
+            put("&n", "<u>");
+            put("&o", "<i>");
+            put("&r", "<reset>");
+        }
+    };
 
     public static Component parseWithPlaceholders(String input, Player player) {
-        MiniMessage miniMessage = MiniMessage.builder()
-                .tags(TagResolver.builder()
-                        .resolvers(
-                                StandardTags.defaults(),
-                                placeholderTag(player))
-                        .build())
-                .build();
-        return miniMessage.deserialize(input);
-    }
+        Integer tagOpener = null;
+        for (int i = 0; i < input.length(); i++) {
+            char character = input.charAt(i);
 
-    public static @NotNull TagResolver placeholderTag(final @NotNull Player player) {
-        return TagResolver.resolver("placeholder", (argumentQueue, context) -> {
-            final String placeholder = argumentQueue.popOr("placeholder tag requires an argument").value();
-            switch (placeholder) {
-                case "name" -> {
-                    return Tag.inserting(player.name());
-                }
-                case "displayname" -> {
-                    return Tag.inserting(player.displayName());
-                }
-                default -> {
-                    if (!NotJustNameplates.isPapiHooked()) return Tag.inserting(Component.text(placeholder));
+            switch (character) {
+                case '<':
+                    tagOpener = i;
+                    break;
+                case '>':
+                    if (tagOpener != null) {
+                        String tag = input.substring(tagOpener, i + 1);
+                        String[] tagData = input.substring(tagOpener + 1, i).split(":");
+                        
+                        if (tagData[0].equals("placeholder") && tagData.length > 1) {
+                            String parsedPlaceholder = "";
+                            switch (tagData[1]) {
+                                case "name":
+                                    parsedPlaceholder = MiniMessage.miniMessage().serialize(player.name());
+                                    break;
+                                case "displayname":
+                                    parsedPlaceholder = MiniMessage.miniMessage().serialize(player.displayName());
+                                    break;
+                                default:
+                                    parsedPlaceholder = PlaceholderAPI.setPlaceholders(player, '%' + tagData[1] + '%');
+                            }
 
-                    final String parsedPlaceholder = PlaceholderAPI.setPlaceholders(player, '%' + placeholder + '%');
-
-                    if (parsedPlaceholder.contains(LegacyComponentSerializer.SECTION_CHAR + "")) {
-                        Component componentPlaceholder = LegacyComponentSerializer.legacySection().deserialize(parsedPlaceholder);
-                        return Tag.inserting(componentPlaceholder);
+                            input = input.replaceFirst(tag, parsedPlaceholder);
+                            i += parsedPlaceholder.length() - tag.length();
+                        }
                     }
-
-                    return Tag.inserting(MiniMessage.miniMessage().deserialize(parsedPlaceholder));
-                }
             }
+        }
 
-        });
+        for (Map.Entry<String, String> color : legacyFormatConversions.entrySet()) {
+            input = input.replace(color.getKey(), color.getValue());
+        }
+
+        return MiniMessage.miniMessage().deserialize(input);
     }
-
 }
