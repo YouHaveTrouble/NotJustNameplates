@@ -2,17 +2,13 @@ package me.youhavetrouble.notjustnameplates.nameplates;
 
 import me.youhavetrouble.notjustnameplates.NotJustNameplates;
 import me.youhavetrouble.notjustnameplates.displays.DisplayContent;
-import net.minecraft.world.phys.AABB;
 import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
-import org.purpurmc.purpur.event.entity.EntityTeleportHinderedEvent;
 
 import java.util.*;
 
@@ -58,55 +54,6 @@ public class NameplateManager implements Listener {
         if (nameplate == null) return;
         if (nameplate.getContent().getCurrentFrame().sneakOverride() == null) return;
         nameplate.update();
-    }
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
-    public void onPlayerMove(PlayerMoveEvent event) {
-        Player player = event.getPlayer();
-
-        if (!event.hasChangedPosition()) return;
-
-        Nameplate nameplate = nameplates.get(event.getPlayer().getUniqueId());
-        if (nameplate == null) return;
-
-        CraftPlayer craftPlayer = (CraftPlayer) player;
-        AABB playerBox = craftPlayer.getHandle().getBoundingBox();
-        World world = player.getWorld();
-        Location loc1 = new Location(world, playerBox.maxX, playerBox.maxY, playerBox.maxZ);
-        Location loc2 = loc1.clone().subtract(0, 1, 0);
-        Location loc3 = new Location(world, playerBox.minX, playerBox.minY, playerBox.minZ);
-        Location loc4 = loc3.clone().add(0, 1, 0);
-
-        boolean inPortal = false;
-        for (Location loc : new Location[]{loc1, loc2, loc3, loc4}) {
-            Block block = loc.getBlock();
-            if (
-                    block.getType() == Material.NETHER_PORTAL
-                            || block.getType() == Material.END_PORTAL
-                            || block.getType() == Material.END_GATEWAY
-            ) {
-                inPortal = true;
-                break;
-            }
-        }
-
-        if (inPortal) {
-            nameplate.remove();
-            nameplate.forceHide = true;
-            return;
-        }
-
-        nameplate.forceHide = false;
-    }
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
-    public void onPlayerTeleportHindered(EntityTeleportHinderedEvent event) {
-        if (!(event.getEntity() instanceof Player player)) return;
-        if (event.getReason() != EntityTeleportHinderedEvent.Reason.IS_VEHICLE) return;
-        Nameplate nameplate = nameplates.get(player.getUniqueId());
-        if (nameplate == null) return;
-        nameplate.remove();
-        event.setShouldRetry(true);
     }
 
     public void reloadNameplates() {
