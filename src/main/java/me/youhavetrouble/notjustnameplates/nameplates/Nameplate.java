@@ -29,6 +29,7 @@ public class Nameplate {
 
     protected boolean forceHide = false;
     private DisplayContent content;
+    private DisplayFrame lastFrame;
     public final UUID playerUuid;
     private TextDisplay.TextAlignment alignment = TextDisplay.TextAlignment.CENTER;
     private boolean visibleForOwner = false;
@@ -139,15 +140,29 @@ public class Nameplate {
      * Update the nameplate position
      */
     public void update() {
+        update(false);
+    }
+
+    public void update(boolean forceNoInterpolate) {
+        boolean shouldInterpolate = false;
+
         if (forceHide) {
             remove();
             return;
         }
+
         Player player = Bukkit.getPlayer(playerUuid);
         if (player == null || player.isDead()) {
             remove();
             return;
         }
+
+        DisplayFrame currentFrame = player.isSneaking() && content.getCurrentFrame().sneakOverride() != null ? content.getCurrentFrame().sneakOverride() : content.getCurrentFrame();
+        if (!currentFrame.equals(lastFrame)) {
+            shouldInterpolate = true;
+        }
+
+        lastFrame = currentFrame;
         if (player.getGameMode() == GameMode.SPECTATOR) {
             remove();
             return;
@@ -171,7 +186,7 @@ public class Nameplate {
             remove();
             return;
         }
-        DisplayFrame currentFrame = player.isSneaking() && content.getCurrentFrame().sneakOverride() != null ? content.getCurrentFrame().sneakOverride() : content.getCurrentFrame();
+
         if (currentFrame.text() == null) {
             remove();
             return;
@@ -179,6 +194,12 @@ public class Nameplate {
 
         createDisplayEntity();
         if (textDisplay == null || textDisplay.isDead()) return;
+
+        if (shouldInterpolate) {
+            textDisplay.setInterpolationDuration(forceNoInterpolate ? 0 : content.getInterpolationDuration());
+            textDisplay.setInterpolationDelay(forceNoInterpolate ? 0 : content.getInterpolationDelay());
+        }
+
         if (!player.getPassengers().contains(textDisplay)) {
             player.addPassenger(textDisplay);
         }

@@ -53,7 +53,7 @@ public class NameplateManager implements Listener {
         Nameplate nameplate = nameplates.get(player.getUniqueId());
         if (nameplate == null) return;
         if (nameplate.getContent().getCurrentFrame().sneakOverride() == null) return;
-        nameplate.update();
+        nameplate.update(true);
     }
 
     public void reloadNameplates() {
